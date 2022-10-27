@@ -1,4 +1,4 @@
-import { Icon16MenuOutline, Icon28MenuOutline } from '@vkontakte/icons';
+import { Icon28MenuOutline } from '@vkontakte/icons';
 import {
     Button,
     Div,
@@ -20,10 +20,9 @@ type Props = {
     id: any;
     rootStore: RootStore;
     openSortModal: any;
-    greet: string;
 };
 
-export const AllLots: FC<Props> = observer(({ id, rootStore, openSortModal, greet }) => {
+export const AllLots: FC<Props> = observer(({ id, rootStore, openSortModal }) => {
     const [page, setPage] = useState(1);
     useEffect(() => {
         rootStore.lotsStore.fetchPage(page);
@@ -38,7 +37,7 @@ export const AllLots: FC<Props> = observer(({ id, rootStore, openSortModal, gree
     }
     return (
         <Panel id={id}>
-            <PanelHeader before={<IconButton><Icon28MenuOutline /></IconButton>}>{greet}</PanelHeader>
+            <PanelHeader before={<IconButton><Icon28MenuOutline /></IconButton>}>Аукцион</PanelHeader>
             <Group header={<Header mode="secondary">Lots lits</Header>}>
                 <SortButton sortKey={rootStore.uiStore.currentSortItem} openSort={openSortModal} />
                 <LotsList rootStore={rootStore} lotsList={rootStore.lotsStore.lotsList} />

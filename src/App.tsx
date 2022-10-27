@@ -8,6 +8,7 @@ import {
     ViewWidth,
 } from '@vkontakte/vkui';
 import React, { useEffect, useState } from 'react';
+import bridge from '@vkontakte/vk-bridge';
 import { AllLots } from './panels/AllLots';
 import { UserLots } from './panels/UserLots';
 import { JustLot } from './panels/JustLot';
@@ -22,14 +23,23 @@ import { RouteName } from './stores/uiStore';
 export const App = observer(() => {
     const { viewWidth } = useAdaptivity();
     const [modal, setModal] = useState<string | null>(null);
-    const [greet, setGreet] = useState<string>('Auction');
     const [snackbar, setSnackbar] = useState(null);
     function openSortModal() {
         setModal('sortmodal');
     }
     useEffect(() => {
-        fetch('https://lottery-api.adv2ls.ru/').then((res) => res.json()).then((res) => {setGreet(res.greetings)})
-    }, [])
+        bridge
+            .send('VKWebAppGetLaunchParams')
+            .then((data: any) => {
+                if (data.vk_app_id) {
+                    console.log('data');
+                }
+            })
+            .catch((error) => {
+                // Ошибка
+                console.log(error);
+            });
+    }, []);
     return (
         <AppRoot>
             <SplitLayout
@@ -41,21 +51,35 @@ export const App = observer(() => {
                         uiStore={rootStore.uiStore}
                     />
                 }
-                header={<PanelHeader separator={false}>{greet}</PanelHeader>}
+                header={<PanelHeader separator={false}>Auction</PanelHeader>}
             >
                 <SplitCol spaced={viewWidth && viewWidth > ViewWidth.MOBILE}>
                     <View activePanel={rootStore.uiStore.currentPanel}>
                         <AllLots
-                            greet={greet}
                             rootStore={rootStore}
                             openSortModal={openSortModal}
                             id={RouteName.ALL_LOTS}
                         />
-                        <UserLots  rootStore={rootStore} id={RouteName.USER_LOTS} />
-                        <JustLot  rootStore={rootStore} id={RouteName.JUST_LOT} />
-                        <LotCreator id={RouteName.LOT_CREATOR} rootStore={rootStore} onCreated={() => setSnackbar('newlot')} />
+                        <UserLots
+                            rootStore={rootStore}
+                            id={RouteName.USER_LOTS}
+                        />
+                        <JustLot
+                            rootStore={rootStore}
+                            id={RouteName.JUST_LOT}
+                        />
+                        <LotCreator
+                            id={RouteName.LOT_CREATOR}
+                            rootStore={rootStore}
+                            onCreated={() => setSnackbar('newlot')}
+                        />
                     </View>
-                    {snackbar && <SnackBarList name={snackbar} onClose={() => setSnackbar(null)} />}
+                    {snackbar && (
+                        <SnackBarList
+                            name={snackbar}
+                            onClose={() => setSnackbar(null)}
+                        />
+                    )}
                 </SplitCol>
             </SplitLayout>
         </AppRoot>

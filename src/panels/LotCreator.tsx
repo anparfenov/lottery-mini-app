@@ -24,32 +24,51 @@ export const LotCreator: FC<LotCreatorProps> = ({
     id,
     onCreated,
 }) => {
-    const [name, setName] = useState<string>('');
+    const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-    const [price, setPrice] = useState<number>(0);
+    const [priceStart, setPriceStart] = useState<number>(0);
+    const [priceStep, setPriceStep] = useState<number>(0);
+    const [date, setDate] = useState<string>('');
+    const [time, setTime] = useState<string>('');
 
-    function handleNameInput(e: SyntheticEvent) {
-        setName((e.target as HTMLInputElement).value);
+    function handleTitleInput(e: SyntheticEvent) {
+        setTitle((e.target as HTMLInputElement).value);
     }
 
     function handleDescriptionInput(e: SyntheticEvent) {
         setDescription((e.target as HTMLInputElement).value);
     }
 
-    function handlePriceInput(e: SyntheticEvent) {
-        setPrice(Number((e.target as HTMLInputElement).value));
+    function handlePriceStartInput(e: SyntheticEvent) {
+        setPriceStart(Number((e.target as HTMLInputElement).value));
+    }
+    
+    function handlePriceStepInput(e: SyntheticEvent) {
+        setPriceStep(Number((e.target as HTMLInputElement).value));
+    }
+
+    function handleDate(e: SyntheticEvent) {
+        console.log('date', (e.target as HTMLInputElement).value)
+        setDate((e.target as HTMLInputElement).value);
+    }
+
+    function handleTime(e: SyntheticEvent) {
+        console.log('time', (e.target as HTMLInputElement).value)
+        setTime((e.target as HTMLInputElement).value);
     }
 
     function handleSubmit(e: SyntheticEvent) {
         e.preventDefault();
+        function transformToDate(date: any, time: any): string {
+            return `${date}T${time}:00`;
+        }
         rootStore.lotsStore.createLot({
-            id: (Math.random() + 1).toString(36).substring(7),
-            name,
+            title,
             description,
-            price: String(price),
-            dateCreated: new Date(),
-            ownerId: rootStore.userStore.currentUser.id,
-            imageSrc: '',
+            address: '11',
+            priceStart,
+            priceStep,
+            biddingEnd: transformToDate(date, time),
         });
 
         onCreated();
@@ -68,7 +87,7 @@ export const LotCreator: FC<LotCreatorProps> = ({
             </PanelHeader>
             <FormLayout onSubmit={handleSubmit}>
                 <FormItem top="название">
-                    <Input value={name} onChange={handleNameInput}></Input>
+                    <Input value={title} onChange={handleTitleInput}></Input>
                 </FormItem>
                 <FormItem top="описание">
                     <Textarea
@@ -79,8 +98,27 @@ export const LotCreator: FC<LotCreatorProps> = ({
                 <FormItem top="стартовая цена">
                     <Input
                         type="number"
-                        value={price}
-                        onChange={handlePriceInput}
+                        value={priceStart}
+                        onChange={handlePriceStartInput}
+                    />
+                </FormItem>
+                <FormItem top="шаг ставки">
+                    <Input
+                        type="number"
+                        value={priceStep}
+                        onChange={handlePriceStepInput}
+                    />
+                </FormItem>
+                <FormItem top="время окончания ставки">
+                    <Input
+                        type="date"
+                        value={date}
+                        onChange={handleDate}
+                    />
+                    <Input
+                        type="time"
+                        value={time}
+                        onChange={handleTime}
                     />
                 </FormItem>
                 <Button stretched size='m' type="submit">submit</Button>

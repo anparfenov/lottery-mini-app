@@ -5,6 +5,7 @@
     position: relative;
     height: 0;
     padding-top: var(--padding-top);
+    max-width: 600px;
 }
 
 .MyImage__element {

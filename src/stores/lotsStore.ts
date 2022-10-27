@@ -1,8 +1,9 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { Lot } from "../features/lot";
+import { Lot, LotDto } from "../features/lot";
 import { makeFakeData } from '../../scripts/makeFakeData';
 import { Sort } from "./uiStore";
 import { RootStore } from "./rootStore";
+import { apiCreateLot } from "../features/api";
 
 const fakeData: Lot[] = makeFakeData();
 
@@ -42,8 +43,8 @@ export class LotsStore {
         this.currentLot = lot;
     }
 
-    createLot(lot: Lot) {
-        // TODO:
+    createLot(lot: LotDto) {
+        apiCreateLot(lot);
     }
 
     makeBet() {

@@ -8,9 +8,9 @@ export class RootStore {
     userStore: UserStore;
 
     constructor() {
-        this.uiStore = new UiStore(this)
+        this.uiStore = new UiStore(this);
         this.lotsStore = new LotsStore(this);
-        this.userStore = new UserStore(this)
+        this.userStore = new UserStore(this);
     }
 }
 
