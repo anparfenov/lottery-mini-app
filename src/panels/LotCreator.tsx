@@ -9,7 +9,7 @@ import {
     PanelHeader,
     Textarea,
 } from '@vkontakte/vkui';
-import { format, formatDistance } from 'date-fns';
+import { format } from 'date-fns';
 import React, { FC, SyntheticEvent, useState } from 'react';
 import { RootStore } from '../stores/rootStore';
 
@@ -70,9 +70,7 @@ export const LotCreator: FC<LotCreatorProps> = ({
             priceStep,
             biddingEnd: transformToDate(date, time),
         }
-        console.log('lotDto', lotDto);
-        console.log('currentLot', rootStore.lotsStore.currentLot);
-        // rootStore.lotsStore.createLot(lotDto, rootStore.lotsStore.currentLot.id, Boolean(rootStore.lotsStore.currentLot));
+        rootStore.lotsStore.createLot(lotDto, rootStore.lotsStore.currentLot.id, Boolean(rootStore.lotsStore.currentLot));
 
         // onCreated();
     }

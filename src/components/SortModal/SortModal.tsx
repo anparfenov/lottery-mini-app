@@ -7,11 +7,12 @@ import { Sort, UiStore } from "../../stores/uiStore";
 export const sortItems: Sort[] = [
     {
         name: 'новинки',
-        by: 'dateCreated',
+        by: 'id',
         sortFn: (a: Lot, b: Lot) => {
             return new Date(a.biddingEnd).getTime() - new Date(b.biddingEnd).getTime()
         },
         isEnabled: true,
+        ord: 'DESC',
     },
     {
         name: 'Сначала дешевые',
@@ -20,6 +21,7 @@ export const sortItems: Sort[] = [
             return Number(a.priceStart) - Number(b.priceStart)
         },
         isEnabled: false,
+        ord: 'ASC',
     },
     {
         name: 'Сначала дорогие',
@@ -28,6 +30,7 @@ export const sortItems: Sort[] = [
             return Number(b.priceStart) - Number(a.priceStart)
         },
         isEnabled: false,
+        ord: 'DESC',
     },
 ]
 

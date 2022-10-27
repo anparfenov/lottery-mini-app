@@ -4,9 +4,10 @@ import { RootStore } from './rootStore';
 
 export type Sort = {
     name: string;
-    by: string;
+    by: 'id' | 'priceStart';
     sortFn: any;
     isEnabled: boolean;
+    ord: 'ASC' | 'DESC';
 };
 
 export type Route = {

@@ -1,29 +1,16 @@
 import {
-    Icon16Dropdown,
-    Icon20NewsfeedOutline,
-    Icon20PictureOutline,
-    Icon20ThumbsUpOutline,
-    Icon20UsersOutline,
-    Icon24NewsfeedOutline,
-    Icon24PictureOutline,
-    Icon24ThumbsUpOutline,
-    Icon24UsersOutline,
     Icon28ArrowLeftOutline,
 } from '@vkontakte/icons';
 import {
-    Badge,
-    Cell,
     Group,
     HorizontalScroll,
     IconButton,
     Panel,
     PanelHeader,
-    SimpleCell,
     Tabs,
     TabsItem,
 } from '@vkontakte/vkui';
-import React, { FC } from 'react';
-import { LotCard } from '../components/LotCard/LotCard';
+import React, { FC, useEffect } from 'react';
 import { LotCell } from '../components/LotCell/LotCell';
 import { Lot } from '../features/lot';
 import { RootStore } from '../stores/rootStore';
@@ -79,6 +66,9 @@ type UserLogsProps = {
     rootStore: RootStore;
 }
 export const UserLotsBuy: FC<UserLogsProps> = ({ rootStore}) => {
+    useEffect(() => {
+        rootStore.lotsStore.fetchPageByStatus(0, 'sales');
+    }, []);
     function goToLot(lot: Lot) {
         rootStore.lotsStore.currentLot = lot;
         rootStore.uiStore.go(RouteName.JUST_LOT);
@@ -91,6 +81,9 @@ export const UserLotsBuy: FC<UserLogsProps> = ({ rootStore}) => {
 }
 
 export const UserLotsSell: FC<UserLogsProps> = ({ rootStore}) => {
+    useEffect(() => {
+        rootStore.lotsStore.fetchPageByStatus(0, 'sales');
+    }, []);
     function goToLot(lot: Lot) {
         rootStore.lotsStore.currentLot = lot;
         rootStore.uiStore.go(RouteName.JUST_LOT);

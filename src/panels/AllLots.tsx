@@ -26,7 +26,9 @@ export const AllLots: FC<Props> = observer(
     ({ id, rootStore, openSortModal }) => {
         const [page, setPage] = useState(1);
         useEffect(() => {
-            rootStore.lotsStore.fetchPage(page);
+            rootStore.lotsStore.fetchCounters().then(() => {
+                return rootStore.lotsStore.fetchPage(page);
+            });
         }, [page]);
         const handleChange = React.useCallback((page) => {
             setPage(page);
@@ -71,7 +73,7 @@ export const AllLots: FC<Props> = observer(
                     >
                         <Pagination
                             currentPage={page}
-                            totalPages={rootStore.lotsStore.lotsList.length}
+                            totalPages={rootStore.lotsStore.totalPages}
                             onChange={handleChange}
                         />
                     </Div>
