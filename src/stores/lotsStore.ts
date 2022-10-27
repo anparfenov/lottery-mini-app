@@ -42,6 +42,10 @@ export class LotsStore {
         this.currentLot = lot;
     }
 
+    createLot(lot: Lot) {
+        // TODO:
+    }
+
     makeBet() {
         // TODO
     }

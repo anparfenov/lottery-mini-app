@@ -1,8 +1,10 @@
+import { Icon16MenuOutline, Icon28MenuOutline } from '@vkontakte/icons';
 import {
     Button,
     Div,
     Group,
     Header,
+    IconButton,
     Pagination,
     Panel,
     PanelHeader,
@@ -11,6 +13,7 @@ import { observer } from 'mobx-react-lite';
 import React, { FC, useEffect, useState } from 'react';
 import { SortButton } from '../components/SortButton/SortButton';
 import { RootStore } from '../stores/rootStore';
+import { RouteName } from '../stores/uiStore';
 import { LotsList } from '../widgets/LotsList/LotsList';
 
 type Props = {
@@ -30,11 +33,12 @@ export const AllLots: FC<Props> = observer(({ id, rootStore, openSortModal, gree
     }, []);
 
     function createLot() {
-        // TODO:
+        // TODO: add page names to enum
+        rootStore.uiStore.go(RouteName.LOT_CREATOR);
     }
     return (
         <Panel id={id}>
-            <PanelHeader>{greet}</PanelHeader>
+            <PanelHeader before={<IconButton><Icon28MenuOutline /></IconButton>}>{greet}</PanelHeader>
             <Group header={<Header mode="secondary">Lots lits</Header>}>
                 <SortButton sortKey={rootStore.uiStore.currentSortItem} openSort={openSortModal} />
                 <LotsList rootStore={rootStore} lotsList={rootStore.lotsStore.lotsList} />

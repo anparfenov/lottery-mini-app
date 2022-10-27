@@ -15,11 +15,15 @@ import { sortItems } from './components/SortModal/SortModal';
 import { RootModal } from './widgets/Modal/RootModal';
 import { rootStore } from './stores/rootStore';
 import { observer } from 'mobx-react-lite';
+import { LotCreator } from './panels/LotCreator';
+import { SnackBarList } from './widgets/SnackBarList/SnackBarList';
+import { RouteName } from './stores/uiStore';
 
 export const App = observer(() => {
     const { viewWidth } = useAdaptivity();
     const [modal, setModal] = useState<string | null>(null);
     const [greet, setGreet] = useState<string>('Auction');
+    const [snackbar, setSnackbar] = useState(null);
     function openSortModal() {
         setModal('sortmodal');
     }
@@ -45,11 +49,13 @@ export const App = observer(() => {
                             greet={greet}
                             rootStore={rootStore}
                             openSortModal={openSortModal}
-                            id="alllots"
+                            id={RouteName.ALL_LOTS}
                         />
-                        <UserLots id="userlots" />
-                        <JustLot id="justlot" />
+                        <UserLots  rootStore={rootStore} id={RouteName.USER_LOTS} />
+                        <JustLot  rootStore={rootStore} id={RouteName.JUST_LOT} />
+                        <LotCreator id={RouteName.LOT_CREATOR} rootStore={rootStore} onCreated={() => setSnackbar('newlot')} />
                     </View>
+                    {snackbar && <SnackBarList name={snackbar} onClose={() => setSnackbar(null)} />}
                 </SplitCol>
             </SplitLayout>
         </AppRoot>
