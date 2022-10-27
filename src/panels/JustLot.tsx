@@ -24,7 +24,7 @@ const Lot: FC<LotProps> = ({ lot, rootStore }) => {
     const [bet, setBet] = useState(rootStore.lotsStore.currentLot.bets ?? 0);
     return (
         <div>
-            <MyImage src={lot.imageSrc} alt={lot.title} />
+            <MyImage src={lot.images?.[0]?.url} alt={lot.title} />
             <h2>{lot.title}</h2>
             <div>
                 {lot.priceStart}
@@ -64,7 +64,7 @@ const UserLot: FC<LotProps> = ({ lot, rootStore }) => {
     }
     return (
         <div>
-            <MyImage src={lot.imageSrc} alt={lot.title} />
+            <MyImage src={lot.images?.[0]?.url} alt={lot.title} />
             <h2>{lot.title}</h2>
             <div>
                 {lot.priceStart}

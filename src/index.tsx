@@ -11,9 +11,9 @@ bridge
     .send('VKWebAppInit', {})
     .then((data) => {
         if (data.result) {
-            console.log('data', data.result);
+            // nice
         } else {
-            console.log('error');
+            console.log('error :(');
         }
     })
     .catch((e) => {

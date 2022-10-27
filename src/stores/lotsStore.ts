@@ -1,28 +1,14 @@
-import { makeAutoObservable, runInAction } from "mobx";
-import { Lot, LotDto } from "../features/lot";
-import { makeFakeData } from '../../scripts/makeFakeData';
-import { Sort } from "./uiStore";
-import { RootStore } from "./rootStore";
-import { apiCreateLot } from "../features/api";
-
-// @ts-ignore
-const fakeData: Lot[] = makeFakeData();
-
-console.log('fakeData', fakeData);
-
-function runRequest(page = 1, perPage = 4): Promise<Lot[]> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(fakeData.slice(page * perPage - perPage, page * perPage));
-        }, 100);
-    });
-}
+import { makeAutoObservable, runInAction } from 'mobx';
+import { Lot, LotDto } from '../features/lot';
+import { Sort } from './uiStore';
+import { RootStore } from './rootStore';
+import { apiCreateLot, apiGetLotsByPage, apiUpdateLot } from '../features/api';
 
 export class LotsStore {
     currentLot: Lot | null = null;
     lotsList: Lot[] = [];
     currentPage: number = 0;
-    itemsPerPage: number = 4;
+    itemsPerPage: number = 6;
     rootStore: RootStore;
 
     constructor(rootStore: RootStore) {
@@ -30,16 +16,16 @@ export class LotsStore {
         makeAutoObservable(this);
     }
 
-    get lotsToBuy() {
-        return fakeData.slice(0, 4);
+    get lotsToBuy(): any[] {
+        return [];
     }
 
-    get lotsToSell() {
-        return fakeData.slice(4, 8);
+    get lotsToSell(): any[] {
+        return [];
     }
 
-    get lotsCompleted() {
-        return fakeData.slice(8, 10);
+    get lotsCompleted(): any[] {
+        return [];
     }
 
     addLot(lot: Lot) {
@@ -58,8 +44,19 @@ export class LotsStore {
         this.currentLot = lot;
     }
 
-    createLot(lot: LotDto) {
-        apiCreateLot(lot);
+    createLot(lot: LotDto, id?: number, isUpdate?: boolean) {
+        if (isUpdate) {
+            apiUpdateLot({
+                userHeaders: this.rootStore.appStore.extractHeaders(),
+                lot,
+                id,
+            });
+        } else {
+            apiCreateLot({
+                userHeaders: this.rootStore.appStore.extractHeaders(),
+                lot,
+            });
+        }
     }
 
     makeBet() {
@@ -67,9 +64,14 @@ export class LotsStore {
     }
 
     async fetchPage(page: number = 1) {
-        const res = await runRequest(page, this.itemsPerPage);
+        const res = await apiGetLotsByPage({
+            userHeaders: this.rootStore.appStore.extractHeaders(),
+            page,
+            limit: this.itemsPerPage,
+        });
+        console.log(res);
         runInAction(() => {
             this.lotsList = res;
-        })
+        });
     }
 }

@@ -1,11 +1,13 @@
 .MyImage {
     --aspect-ratio: calc(4 / 3);
-    --padding-top: calc(100% / var(--aspect-ratio));
+    --image-width: 300px;
+    --padding-top: calc(var(--image-width) / var(--aspect-ratio));
 
     position: relative;
     height: 0;
     padding-top: var(--padding-top);
-    max-width: 100px;
+    max-width: var(--image-width);
+    border: 1px dotted black;
 }
 
 .MyImage__element {

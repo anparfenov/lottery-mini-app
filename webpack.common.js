@@ -2,9 +2,12 @@ const path = require('path');
 const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const assetsDir = path.resolve(__dirname, 'public/assets');
-const plugins = [new HtmlWebpackPlugin({ template: './public/index.html' })];
+const plugins = [
+    new HtmlWebpackPlugin({ template: './public/index.html' }),
+];
 if (fs.existsSync(assetsDir)) {
     if (fs.readdirSync(assetsDir).length !== 0) {
         plugins.push(

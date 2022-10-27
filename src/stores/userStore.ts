@@ -6,8 +6,8 @@ type Bet = {
     bet: number;
 }
 
-type User = {
-    id: string,
+export type User = {
+    id: number,
     name: string;
     bets: Bet[];
     lotIds: number[];
@@ -15,7 +15,7 @@ type User = {
 
 export class UserStore {
     currentUser: User = {
-        id: '1',
+        id: 1,
         name: 'username',
         bets: [],
         lotIds: [],
@@ -26,5 +26,9 @@ export class UserStore {
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
         makeAutoObservable(this);
+    }
+
+    setCurrentUser(user: User) {
+        this.currentUser = user;
     }
 }

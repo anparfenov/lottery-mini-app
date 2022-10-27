@@ -4,17 +4,23 @@ enum LotStatus {
     COMPLETED = 'completed',
 }
 
+export type Image = {
+    id: number,
+    lotId: number,
+    url: string,
+}
+
 export type Lot = {
-    id: any;
+    id: number;
     title: string;
-    imageSrc?: string;
+    images: Image[];
     priceStart: number;
     priceStep: number;
     time?: number;
     bets?: number;
     description?: string;
     biddingEnd: string;
-    ownerId: string;
+    ownerId: number;
     address?: string;
     status?: LotStatus;
 };

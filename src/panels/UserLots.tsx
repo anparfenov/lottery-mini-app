@@ -85,7 +85,7 @@ export const UserLotsBuy: FC<UserLogsProps> = ({ rootStore}) => {
     }
     return (
         <Group>
-            {rootStore.lotsStore.lotsToBuy.map((lot) => <LotCell goToLot={() => goToLot(lot)} lot={lot} />)}
+            {rootStore.lotsStore.lotsToBuy.map((lot) => <LotCell key={lot.id} goToLot={() => goToLot(lot)} lot={lot} />)}
         </Group>
     )
 }
@@ -97,7 +97,7 @@ export const UserLotsSell: FC<UserLogsProps> = ({ rootStore}) => {
     }
     return (
         <Group>
-            {rootStore.lotsStore.lotsToSell.map((lot) => <LotCell goToLot={() => goToLot(lot)} lot={lot} />)}
+            {rootStore.lotsStore.lotsToSell.map((lot) => <LotCell key={lot.id} goToLot={() => goToLot(lot)} lot={lot} />)}
         </Group>
     )
 }
@@ -109,7 +109,7 @@ export const UserLotsCompleted: FC<UserLogsProps> = ({ rootStore}) => {
     }
     return (
         <Group>
-            {rootStore.lotsStore.lotsCompleted.map((lot) => <LotCell goToLot={() => goToLot(lot)} lot={lot} />)}
+            {rootStore.lotsStore.lotsCompleted.map((lot) => <LotCell key={lot.id} goToLot={() => goToLot(lot)} lot={lot} />)}
         </Group>
     )
 }

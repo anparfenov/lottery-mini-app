@@ -8,7 +8,7 @@ import {
     ViewWidth,
 } from '@vkontakte/vkui';
 import React, { useEffect, useState } from 'react';
-import bridge from '@vkontakte/vk-bridge';
+import bridge, { UserInfo } from '@vkontakte/vk-bridge';
 import { AllLots } from './panels/AllLots';
 import { UserLots } from './panels/UserLots';
 import { JustLot } from './panels/JustLot';
@@ -19,6 +19,7 @@ import { observer } from 'mobx-react-lite';
 import { LotCreator } from './panels/LotCreator';
 import { SnackBarList } from './widgets/SnackBarList/SnackBarList';
 import { RouteName } from './stores/uiStore';
+import { User } from './stores/userStore';
 
 export const App = observer(() => {
     const { viewWidth } = useAdaptivity();
@@ -31,8 +32,23 @@ export const App = observer(() => {
         bridge
             .send('VKWebAppGetLaunchParams')
             .then((data: any) => {
+                console.log('app info', data);
                 if (data.vk_app_id) {
-                    console.log('data');
+                    rootStore.appStore.setAppLaunchParams(data);
+                    return bridge.send('VKWebAppGetUserInfo', { user_id: data.vk_user_id })
+                }
+                return null;
+            })
+            .then((res: UserInfo | null) => {
+                if (res) {
+                    console.log('user info', res);
+                    const user: User = {
+                        id: res.id,
+                        name: `${res.first_name} ${res.last_name}`,
+                        bets: [],
+                        lotIds: [],
+                    }
+                    rootStore.userStore.setCurrentUser(user);
                 }
             })
             .catch((error) => {

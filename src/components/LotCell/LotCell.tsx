@@ -14,7 +14,7 @@ export const LotCell: FC<Props> = ({ lot, goToLot }) => {
                 <Avatar
                     mode="image"
                     size={32}
-                    src={lot.imageSrc}
+                    src={lot.images?.[0]?.url}
                     alt={lot.title}
                 />
             }

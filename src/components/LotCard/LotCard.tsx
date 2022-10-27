@@ -18,7 +18,7 @@ export const LotCard: FC<Props> = observer(({ lot, rootStore }) => {
     return (
         <Card onClick={() => rootStore.uiStore.go(RouteName.JUST_LOT, rootStore.lotsStore.setCurrentLot(lot))}>
             <div className={style.LotCard}>
-                <MyImage src={lot.imageSrc} alt={lot.title}></MyImage>
+                <MyImage src={lot.images?.[0]?.url} alt={lot.title}></MyImage>
                 <Div>{lot.title}</Div>
                 <Div>{lot.priceStart}</Div>
                 <Div>осталось: {lot.biddingEnd}</Div>

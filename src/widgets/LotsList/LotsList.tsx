@@ -11,7 +11,7 @@ type Props = {
 
 export const LotsList: FC<Props> = ({ lotsList, rootStore }) => {
   return (
-    <CardGrid size='m'>
+    <CardGrid size='s'>
         {lotsList.map((lot) => {
             return (<LotCard rootStore={rootStore} key={lot.id} lot={lot} />)
         })}

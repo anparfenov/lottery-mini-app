@@ -62,16 +62,19 @@ export const LotCreator: FC<LotCreatorProps> = ({
         function transformToDate(date: any, time: any): string {
             return `${date}T${time}:00`;
         }
-        rootStore.lotsStore.createLot({
+        const lotDto = {
             title,
             description,
             address: '11',
             priceStart,
             priceStep,
             biddingEnd: transformToDate(date, time),
-        });
+        }
+        console.log('lotDto', lotDto);
+        console.log('currentLot', rootStore.lotsStore.currentLot);
+        // rootStore.lotsStore.createLot(lotDto, rootStore.lotsStore.currentLot.id, Boolean(rootStore.lotsStore.currentLot));
 
-        onCreated();
+        // onCreated();
     }
 
     return (
