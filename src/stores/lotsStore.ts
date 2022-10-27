@@ -15,6 +15,7 @@ function runRequest(page = 1, perPage = 4): Promise<Lot[]> {
 }
 
 export class LotsStore {
+    currentLot: Lot | null = null;
     lotsList: Lot[] = [];
     currentPage: number = 0;
     itemsPerPage: number = 4;
@@ -35,6 +36,14 @@ export class LotsStore {
 
     sortLots(sort: Sort) {
         this.lotsList = this.lotsList.sort(sort.sortFn);
+    }
+
+    setCurrentLot(lot: Lot) {
+        this.currentLot = lot;
+    }
+
+    makeBet() {
+        // TODO
     }
 
     async fetchPage(page: number = 1) {

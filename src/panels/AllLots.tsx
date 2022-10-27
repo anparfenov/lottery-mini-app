@@ -1,14 +1,8 @@
-import { Icon20SortOutline } from '@vkontakte/icons';
 import {
     Button,
-    CellButton,
     Div,
     Group,
     Header,
-    IconButton,
-    ModalPage,
-    ModalPageHeader,
-    ModalRoot,
     Pagination,
     Panel,
     PanelHeader,
@@ -16,21 +10,17 @@ import {
 import { observer } from 'mobx-react-lite';
 import React, { FC, useEffect, useState } from 'react';
 import { SortButton } from '../components/SortButton/SortButton';
-import { LotsStore } from '../stores/lotsStore';
 import { RootStore } from '../stores/rootStore';
-import { Sort, UiStore } from '../stores/uiStore';
 import { LotsList } from '../widgets/LotsList/LotsList';
 
 type Props = {
-    go: any;
     id: any;
     rootStore: RootStore;
     openSortModal: any;
+    greet: string;
 };
 
-
-
-export const AllLots: FC<Props> = observer(({ go, id, rootStore, openSortModal }) => {
+export const AllLots: FC<Props> = observer(({ id, rootStore, openSortModal, greet }) => {
     const [page, setPage] = useState(1);
     useEffect(() => {
         rootStore.lotsStore.fetchPage(page);
@@ -44,10 +34,10 @@ export const AllLots: FC<Props> = observer(({ go, id, rootStore, openSortModal }
     }
     return (
         <Panel id={id}>
-            <PanelHeader>Auction</PanelHeader>
+            <PanelHeader>{greet}</PanelHeader>
             <Group header={<Header mode="secondary">Lots lits</Header>}>
                 <SortButton sortKey={rootStore.uiStore.currentSortItem} openSort={openSortModal} />
-                <LotsList lotsList={rootStore.lotsStore.lotsList} />
+                <LotsList rootStore={rootStore} lotsList={rootStore.lotsStore.lotsList} />
                 <Div
                     style={{
                         display: 'flex',

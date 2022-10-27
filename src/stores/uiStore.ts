@@ -11,6 +11,7 @@ export type Sort = {
 
 export class UiStore {
     sortItems: Sort[] = sortModalItems;
+    currentPanel: string = 'alllots';
     rootStore: RootStore;
     
     constructor(rootStore: RootStore) {
@@ -37,5 +38,13 @@ export class UiStore {
             }
         });
         this.rootStore.lotsStore.sortLots(this.currentSortItem);
+    }
+
+    go(panelName: string, cb: any) {
+        console.log('panelName', panelName);
+        if (cb) {
+            cb();
+        }
+        this.currentPanel = panelName;
     }
 }

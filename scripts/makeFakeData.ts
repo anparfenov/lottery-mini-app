@@ -7,6 +7,7 @@ export function createRandomProduct() {
     dateCreated: faker.date.past(),
     price: faker.commerce.price(),
     imageSrc: faker.image.fashion(),
+    ownerId: faker.datatype.uuid(),
   };
 }
 
