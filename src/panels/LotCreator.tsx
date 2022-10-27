@@ -9,8 +9,8 @@ import {
     PanelHeader,
     Textarea,
 } from '@vkontakte/vkui';
+import { format, formatDistance } from 'date-fns';
 import React, { FC, SyntheticEvent, useState } from 'react';
-import { MyImage } from '../components/MyImage/MyImage';
 import { RootStore } from '../stores/rootStore';
 
 type LotCreatorProps = {
@@ -28,8 +28,8 @@ export const LotCreator: FC<LotCreatorProps> = ({
     const [description, setDescription] = useState<string>(rootStore.lotsStore.currentLot?.description ?? '');
     const [priceStart, setPriceStart] = useState<number>(rootStore.lotsStore.currentLot?.priceStart ?? 0);
     const [priceStep, setPriceStep] = useState<number>(rootStore.lotsStore.currentLot?.priceStep ?? 0);
-    const [date, setDate] = useState<string>('');
-    const [time, setTime] = useState<string>('');
+    const [date, setDate] = useState<string>(rootStore.lotsStore.currentLot?.biddingEnd ? format(new Date(rootStore.lotsStore.currentLot?.biddingEnd), 'yyyy-MM-dd') : '');
+    const [time, setTime] = useState<string>(rootStore.lotsStore.currentLot?.biddingEnd ? format(new Date(rootStore.lotsStore.currentLot?.biddingEnd), 'HH:mm') : '');
 
     function handleTitleInput(e: SyntheticEvent) {
         setTitle((e.target as HTMLInputElement).value);

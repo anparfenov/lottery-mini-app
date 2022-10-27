@@ -8,6 +8,8 @@ import { apiCreateLot } from "../features/api";
 // @ts-ignore
 const fakeData: Lot[] = makeFakeData();
 
+console.log('fakeData', fakeData);
+
 function runRequest(page = 1, perPage = 4): Promise<Lot[]> {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -26,6 +28,18 @@ export class LotsStore {
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
         makeAutoObservable(this);
+    }
+
+    get lotsToBuy() {
+        return fakeData.slice(0, 4);
+    }
+
+    get lotsToSell() {
+        return fakeData.slice(4, 8);
+    }
+
+    get lotsCompleted() {
+        return fakeData.slice(8, 10);
     }
 
     addLot(lot: Lot) {

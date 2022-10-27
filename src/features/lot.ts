@@ -1,3 +1,9 @@
+enum LotStatus {
+    BUY = 'buy',
+    SELL = 'sell',
+    COMPLETED = 'completed',
+}
+
 export type Lot = {
     id: any;
     title: string;
@@ -10,6 +16,7 @@ export type Lot = {
     biddingEnd: string;
     ownerId: string;
     address?: string;
+    status?: LotStatus;
 };
 
 export type LotDto = {

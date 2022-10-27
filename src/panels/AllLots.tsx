@@ -1,4 +1,4 @@
-import { Icon28MenuOutline } from '@vkontakte/icons';
+import { Icon28MenuOutline, Icon28UserOutline } from '@vkontakte/icons';
 import {
     Button,
     Div,
@@ -38,7 +38,7 @@ export const AllLots: FC<Props> = observer(({ id, rootStore, openSortModal }) =>
     }
     return (
         <Panel id={id}>
-            <PanelHeader before={<IconButton><Icon28MenuOutline /></IconButton>}>Аукцион</PanelHeader>
+            <PanelHeader before={<IconButton onClick={() => rootStore.uiStore.go(RouteName.USER_LOTS)}><Icon28UserOutline /></IconButton>}>Аукцион</PanelHeader>
             <Group header={<Header mode="secondary">Lots lits</Header>}>
                 <SortButton sortKey={rootStore.uiStore.currentSortItem} openSort={openSortModal} />
                 <LotsList rootStore={rootStore} lotsList={rootStore.lotsStore.lotsList} />

@@ -13,6 +13,7 @@ import { MyImage } from '../components/MyImage/MyImage';
 import { Lot } from '../features/lot';
 import { RootStore } from '../stores/rootStore';
 import { RouteName } from '../stores/uiStore';
+import { format as dateFnsFormat } from 'date-fns';
 
 type LotProps = {
     lot: Lot;
@@ -29,7 +30,7 @@ const Lot: FC<LotProps> = ({ lot, rootStore }) => {
                 {lot.priceStart}
                 {lot.bets}
             </div>
-            <div>until end: {lot.time}</div>
+            <div>until end: {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}</div>
             <div>
                 <FormItem top="ставка">
                     <Input
@@ -69,7 +70,7 @@ const UserLot: FC<LotProps> = ({ lot, rootStore }) => {
                 {lot.priceStart}
                 {lot.bets}
             </div>
-            <div>until end: {lot.time}</div>
+            <div>until end: {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}</div>
             <div>{lot.description}</div>
             <div>
                 <ButtonGroup stretched>
