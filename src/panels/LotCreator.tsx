@@ -24,10 +24,10 @@ export const LotCreator: FC<LotCreatorProps> = ({
     id,
     onCreated,
 }) => {
-    const [title, setTitle] = useState<string>('');
-    const [description, setDescription] = useState<string>('');
-    const [priceStart, setPriceStart] = useState<number>(0);
-    const [priceStep, setPriceStep] = useState<number>(0);
+    const [title, setTitle] = useState<string>(rootStore.lotsStore.currentLot?.title ?? '');
+    const [description, setDescription] = useState<string>(rootStore.lotsStore.currentLot?.description ?? '');
+    const [priceStart, setPriceStart] = useState<number>(rootStore.lotsStore.currentLot?.priceStart ?? 0);
+    const [priceStep, setPriceStep] = useState<number>(rootStore.lotsStore.currentLot?.priceStep ?? 0);
     const [date, setDate] = useState<string>('');
     const [time, setTime] = useState<string>('');
 

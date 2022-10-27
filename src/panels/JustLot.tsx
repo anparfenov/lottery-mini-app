@@ -2,6 +2,7 @@ import { Icon28ArrowLeftOutline } from '@vkontakte/icons';
 import {
     Button,
     ButtonGroup,
+    FormItem,
     IconButton,
     Input,
     Panel,
@@ -22,22 +23,24 @@ const Lot: FC<LotProps> = ({ lot, rootStore }) => {
     const [bet, setBet] = useState(rootStore.lotsStore.currentLot.bets ?? 0);
     return (
         <div>
-            <MyImage src={lot.imageSrc} alt={lot.name} />
-            <h2>{lot.name}</h2>
+            <MyImage src={lot.imageSrc} alt={lot.title} />
+            <h2>{lot.title}</h2>
             <div>
-                {lot.price}
+                {lot.priceStart}
                 {lot.bets}
             </div>
             <div>until end: {lot.time}</div>
             <div>
-                <Input
-                    type="number"
-                    value={bet}
-                    onChange={(e: SyntheticEvent) =>
-                        setBet(Number((e.target as HTMLInputElement).value))
-                    }
-                />
-                <span>min step 100</span>
+                <FormItem top="ставка">
+                    <Input
+                        type="number"
+                        value={bet}
+                        onChange={(e: SyntheticEvent) =>
+                            setBet(Number((e.target as HTMLInputElement).value))
+                        }
+                    />
+                </FormItem>
+                <span>min step {lot.priceStep}</span>
             </div>
             <div>{lot.description}</div>
             <div>
@@ -60,22 +63,23 @@ const UserLot: FC<LotProps> = ({ lot, rootStore }) => {
     }
     return (
         <div>
-            <MyImage src={lot.imageSrc} alt={lot.name} />
-            <h2>{lot.name}</h2>
+            <MyImage src={lot.imageSrc} alt={lot.title} />
+            <h2>{lot.title}</h2>
             <div>
-                {lot.price}
+                {lot.priceStart}
                 {lot.bets}
             </div>
             <div>until end: {lot.time}</div>
             <div>{lot.description}</div>
             <div>
-                <ButtonGroup>
+                <ButtonGroup stretched>
                     <Button
                         stretched
                         size="m"
-                        onClick={() =>
-                            rootStore.uiStore.go(RouteName.LOT_CREATOR)
-                        }
+                        onClick={() => {
+                            rootStore.lotsStore.currentLot = lot;
+                            rootStore.uiStore.go(RouteName.LOT_CREATOR);
+                        }}
                     >
                         изменить
                     </Button>
@@ -96,10 +100,15 @@ type Props = {
 export const JustLot: FC<Props> = ({ id, rootStore }) => {
     let lot = null;
     if (
-        rootStore.userStore.currentUser.id ===
+        rootStore.userStore.currentUser.id !==
         rootStore.lotsStore.currentLot.ownerId
     ) {
-        lot = <UserLot lot={rootStore.lotsStore.currentLot} rootStore={rootStore} />;
+        lot = (
+            <UserLot
+                lot={rootStore.lotsStore.currentLot}
+                rootStore={rootStore}
+            />
+        );
     } else {
         lot = (
             <Lot

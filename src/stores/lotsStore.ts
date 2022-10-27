@@ -5,6 +5,7 @@ import { Sort } from "./uiStore";
 import { RootStore } from "./rootStore";
 import { apiCreateLot } from "../features/api";
 
+// @ts-ignore
 const fakeData: Lot[] = makeFakeData();
 
 function runRequest(page = 1, perPage = 4): Promise<Lot[]> {

@@ -32,6 +32,7 @@ export const AllLots: FC<Props> = observer(({ id, rootStore, openSortModal }) =>
     }, []);
 
     function createLot() {
+        rootStore.lotsStore.currentLot = null;
         // TODO: add page names to enum
         rootStore.uiStore.go(RouteName.LOT_CREATOR);
     }

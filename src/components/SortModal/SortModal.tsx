@@ -9,23 +9,23 @@ export const sortItems: Sort[] = [
         name: 'новинки',
         by: 'dateCreated',
         sortFn: (a: Lot, b: Lot) => {
-            return a.dateCreated.getTime() - b.dateCreated.getTime()
+            return new Date(a.biddingEnd).getTime() - new Date(b.biddingEnd).getTime()
         },
         isEnabled: true,
     },
     {
         name: 'Сначала дешевые',
-        by: 'price',
+        by: 'priceStart',
         sortFn: (a: Lot, b: Lot) => {
-            return Number(a.price) - Number(b.price)
+            return Number(a.priceStart) - Number(b.priceStart)
         },
         isEnabled: false,
     },
     {
         name: 'Сначала дорогие',
-        by: 'price',
+        by: 'priceStart',
         sortFn: (a: Lot, b: Lot) => {
-            return Number(b.price) - Number(a.price)
+            return Number(b.priceStart) - Number(a.priceStart)
         },
         isEnabled: false,
     },

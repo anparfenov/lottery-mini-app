@@ -3,10 +3,10 @@ import { faker } from '@faker-js/faker';
 export function createRandomProduct() {
   return {
     id: faker.datatype.uuid(),
-    name: faker.commerce.product(),
+    title: faker.commerce.product(),
     dateCreated: faker.date.past(),
-    price: faker.commerce.price(),
-    imageSrc: faker.image.fashion(),
+    priceStart: Number(faker.commerce.price()),
+    priceStep: 10,
     ownerId: faker.datatype.uuid(),
   };
 }

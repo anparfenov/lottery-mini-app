@@ -1,12 +1,13 @@
 export type Lot = {
     id: any;
-    name: string;
+    title: string;
     imageSrc?: string;
-    price: string;
+    priceStart: number;
+    priceStep: number;
     time?: number;
     bets?: number;
     description?: string;
-    dateCreated: Date;
+    biddingEnd: string;
     ownerId: string;
     address?: string;
 };
