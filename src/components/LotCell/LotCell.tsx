@@ -1,7 +1,7 @@
 import { Avatar, SimpleCell } from '@vkontakte/vkui';
 import { format } from 'date-fns';
 import React, { FC, useEffect } from 'react';
-import { Lot } from '../../features/lot';
+import { Lot, makeBetsUntil } from '../../features/lot';
 import { transformToDate, useTimer } from '../../stores/timer';
 
 type Props = {
@@ -56,7 +56,7 @@ export const LotCell: FC<Props> = ({ lot, goToLot, userId }) => {
                 />
             }
             after={<div>цена: {lot.priceStart}</div>}
-            subtitle={time === 0 ? `ставки до: ${format(new Date(lot.biddingEnd), 'yyyy-MM-dd HH:mm')}` : `осталось: ${transformToDate(time)}`}
+            subtitle={time === 0 ? makeBetsUntil(lot.biddingEnd, 'ставки до: ') : `осталось: ${transformToDate(time)}`}
             onClick={goToLot}
         >
             <div style={getTitleColor(lot.status, lot.lastBidder === userId)}>{lot.title}</div>

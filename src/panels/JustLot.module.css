@@ -22,7 +22,7 @@
 
 .Lot__biddingEnd {
     margin-top: 6px;
-    color: orange;
+    color: orangered;
     padding: var(--padding);
     font-weight: bold;
 }
@@ -30,6 +30,12 @@
 .Lot__description {
     margin-top: 6px;
     padding: var(--padding);
+}
+
+.Lot__status {
+    padding: 3px;
+    border-radius: 4px;
+    display: inline-block;
 }
 
 .UserLot {
@@ -67,7 +73,7 @@
 
 .UserLot__biddingEnd {
     margin-top: 6px;
-    color: orange;
+    color: orangered;
     padding: var(--padding);
     font-weight: bold;
 }

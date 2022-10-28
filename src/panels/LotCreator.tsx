@@ -137,10 +137,11 @@ export const LotCreator: FC<LotCreatorProps> = ({
             )
             .then((data) => {
                 if (data.id && imageFile) {
-                    rootStore.lotsStore.uploadImage(imageFile, data.id);
+                    rootStore.lotsStore.uploadImage(imageFile, data.id).then(() => {
+                        onCreated();
+                    });
                 }
             });
-        onCreated();
     }
 
     function handleImageUpload(file: any) {

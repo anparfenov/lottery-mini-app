@@ -2,7 +2,7 @@ import { Card, Div } from '@vkontakte/vkui';
 import { format } from 'date-fns';
 import { observer } from 'mobx-react-lite';
 import React, { FC, useEffect } from 'react';
-import { Lot } from '../../features/lot';
+import { getStatusStyle, Lot, makeBetsUntil } from '../../features/lot';
 import { RootStore } from '../../stores/rootStore';
 import { transformToDate, useTimer } from '../../stores/timer';
 import { RouteName } from '../../stores/uiStore';
@@ -29,24 +29,7 @@ export const LotCard: FC<Props> = observer(({ lot, rootStore }) => {
         return () => {
             stop()
         }
-    }, [])    
-    function getStatusStyle(status: string) {
-        if (status === 'closed') {
-            return {
-                backgroundColor: 'red',
-                color: 'white',
-            }
-        } else if (status === 'sales') {
-            return {
-                backgroundColor: 'green',
-                color: 'white'
-            }
-        }
-        return {
-            backgroundColor: 'lightgray',
-            color: 'black'
-        }
-    }
+    }, [])
     return (
         <Card mode="outline" onClick={() => rootStore.uiStore.go(RouteName.JUST_LOT, rootStore.lotsStore.setCurrentLot(lot))}>
             <div className={style.LotCard}>
@@ -55,7 +38,7 @@ export const LotCard: FC<Props> = observer(({ lot, rootStore }) => {
                 <div className={style.LotCard__price}>{lot.priceStart}</div>
                 <div className={style.LotCard__status} style={getStatusStyle(lot.status)}>{lot.status}</div>
                 {lot.currentBid && <div className={style.LotCard__bid}>ставка: {lot.currentBid}</div>}
-                {time === 0 && <div className={style.LotCard__biddingEnd}>ставки до: {format(new Date(lot.biddingEnd), 'yyyy-MM-dd HH:mm')}</div>}
+                {time === 0 && <div className={style.LotCard__biddingEnd}>{makeBetsUntil(lot.biddingEnd, 'ставки до:')}</div>}
                 {time > 0 && <div className={style.LotCard__biddingEnd}>осталось: {transformToDate(time)}</div>}
             </div>
         </Card>

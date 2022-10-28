@@ -4,6 +4,8 @@
 //     COMPLETED = 'completed',
 // }
 
+import { format } from "date-fns";
+
 export type Image = {
     id: number,
     lotId: number,
@@ -36,3 +38,29 @@ export type LotDto = {
     biddingEnd?: string;
     status?: 'open' | 'sales' | 'closed' | 'draft';
 };
+
+export function getStatusStyle(status: string) {
+    if (status === 'closed') {
+        return {
+            backgroundColor: 'red',
+            color: 'white',
+        }
+    } else if (status === 'sales') {
+        return {
+            backgroundColor: 'green',
+            color: 'white'
+        }
+    }
+    return {
+        backgroundColor: 'lightgray',
+        color: 'black'
+    }
+}
+
+export function makeBetsUntil(biddingEnd: string, appendText: string) {
+    const biddingTime = (new Date(biddingEnd)).getTime();
+    if (biddingTime < Date.now()) {
+        return 'время вышло';
+    }
+    return `${appendText} ${format(new Date(biddingEnd), 'yyyy-MM-dd HH:mm')}`;
+}

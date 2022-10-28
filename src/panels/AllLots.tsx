@@ -54,7 +54,7 @@ export const AllLots: FC<Props> = observer(
                         </IconButton>
                     }
                 >
-                    Аукцион
+                    VK Аукцион
                 </PanelHeader>
                 <Group>
                     <SortButton

@@ -37,6 +37,7 @@ export const App = observer(() => {
             .then((data: any) => {
                 if (data.vk_app_id) {
                     rootStore.appStore.setAppLaunchParams(data);
+                    console.log('app launch params', data);
                     return bridge.send('VKWebAppGetUserInfo', { user_id: data.vk_user_id })
                 }
                 return null;
@@ -73,7 +74,7 @@ export const App = observer(() => {
                         }}
                     />
                 }
-                header={<PanelHeader separator={false}>Auction</PanelHeader>}
+                header={<PanelHeader separator={false}>VK Аукцион</PanelHeader>}
             >
                 <SplitCol spaced={viewWidth && viewWidth > ViewWidth.MOBILE}>
                     <View activePanel={rootStore.uiStore.currentPanel}>

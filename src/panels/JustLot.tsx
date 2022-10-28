@@ -12,7 +12,7 @@ import {
 } from '@vkontakte/vkui';
 import React, { FC, SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { MyImage } from '../components/MyImage/MyImage';
-import { Lot } from '../features/lot';
+import { getStatusStyle, Lot, makeBetsUntil } from '../features/lot';
 import { RootStore } from '../stores/rootStore';
 import { RouteName } from '../stores/uiStore';
 import { format as dateFnsFormat } from 'date-fns';
@@ -71,7 +71,6 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
     function openMessenger() {
         window.open(`https://vk.com/im?sel=${lot.authorId}`);
     }
-
     return (
         <Group>
             <div className={style.Lot}>
@@ -89,9 +88,11 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                 <div style={{ padding: '0 16px', marginTop: '6px' }}>
                     шаг: {lot.priceStep}
                 </div>
+                <div style={{ padding: '0 16px', marginTop: '6px' }}>
+                    статус: <div className={style.Lot__status} style={getStatusStyle(lot.status)}>{lot.status}</div>    
+                </div>
                 {time === 0 && <div className={style.UserLot__biddingEnd}>
-                    до конца ставок:{' '}
-                    {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy HH:mm')}
+                    {makeBetsUntil(lot.biddingEnd, 'до конца ставок:')}
                 </div>}
                 {time > 0 && <div className={style.UserLot__biddingEnd}>
                     до конца ставок:{' '}
@@ -189,9 +190,11 @@ const UserLot: FC<LotProps> = ({ lot, rootStore, openDatePickerModal }) => {
                 <div className={style.Lot__priceStart}>
                     ставка: {lot.currentBid}
                 </div>
+                <div style={{ padding: '0 16px', marginTop: '6px' }}>
+                    статус: <div className={style.Lot__status} style={getStatusStyle(lot.status)}>{lot.status}</div>    
+                </div>
                 {time === 0 && <div className={style.UserLot__biddingEnd}>
-                    до конца ставок:{' '}
-                    {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy HH:mm')}
+                    {makeBetsUntil(lot.biddingEnd, 'до конца ставок:')}
                 </div>}
                 {time > 0 && <div className={style.UserLot__biddingEnd}>
                     до конца ставок:{' '}

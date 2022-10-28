@@ -1,4 +1,4 @@
-import { Icon28ArrowLeftOutline } from '@vkontakte/icons';
+import { Icon24ArrowLeftOutline, Icon28ArrowLeftOutline } from '@vkontakte/icons';
 import {
     Group,
     HorizontalScroll,
@@ -7,6 +7,8 @@ import {
     PanelHeader,
     Tabs,
     TabsItem,
+    useAdaptivity,
+    ViewWidth,
 } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { FC, useEffect } from 'react';
@@ -148,12 +150,13 @@ export const UserLotsCompleted: FC<UserLogsProps> = observer(
 );
 
 export const UserLots: FC<Props> = observer(({ id, rootStore }) => {
+    const {viewWidth} = useAdaptivity();
     return (
         <Panel id={id}>
             <PanelHeader
                 before={
                     <IconButton onClick={() => rootStore.uiStore.back()}>
-                        <Icon28ArrowLeftOutline />
+                        {viewWidth > ViewWidth.MOBILE ? <Icon24ArrowLeftOutline /> : <Icon28ArrowLeftOutline />}
                     </IconButton>
                 }
             >
