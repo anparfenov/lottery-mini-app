@@ -47,8 +47,11 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
     }, [bet, dirty]);
 
     const isUserWinner = useMemo(() => {
-        return isTimeOver() && lot.lastBidder === rootStore.appStore.appLaunchParams.vk_user_id;
-    }, [])
+        return (
+            isTimeOver() &&
+            lot.lastBidder === rootStore.appStore.appLaunchParams.vk_user_id
+        );
+    }, []);
 
     function openMessenger() {
         window.open(`https://vk.com/im?sel=${lot.authorId}`);
@@ -75,27 +78,31 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                     до конца ставок:{' '}
                     {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}
                 </div>
-                <div>
-                    <FormItem
-                        top="ставка"
-                        status={isBetCorrect ? 'default' : 'error'}
-                        bottom={
-                            isBetCorrect ? '' : `Шаг ставки ${lot.priceStep}`
-                        }
-                    >
-                        <Input
-                            type="number"
-                            value={bet}
-                            onChange={(e: SyntheticEvent) => {
-                                const value = Number(
-                                    (e.target as HTMLInputElement).value
-                                );
-                                setDirty({ bet: true });
-                                setBet(value);
-                            }}
-                        />
-                    </FormItem>
-                </div>
+                {!isTimeOver() && (
+                    <div>
+                        <FormItem
+                            top="ставка"
+                            status={isBetCorrect ? 'default' : 'error'}
+                            bottom={
+                                isBetCorrect
+                                    ? ''
+                                    : `Шаг ставки ${lot.priceStep}`
+                            }
+                        >
+                            <Input
+                                type="number"
+                                value={bet}
+                                onChange={(e: SyntheticEvent) => {
+                                    const value = Number(
+                                        (e.target as HTMLInputElement).value
+                                    );
+                                    setDirty({ bet: true });
+                                    setBet(value);
+                                }}
+                            />
+                        </FormItem>
+                    </div>
+                )}
                 <Div>
                     {!isTimeOver() && (
                         <Button
@@ -116,7 +123,11 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                             Аукцион завершен
                         </Button>
                     )}
-                    {isUserWinner && <Button stretched onClick={openMessenger} size="m">Связаться с продавцом</Button>}
+                    {isUserWinner && (
+                        <Button stretched onClick={openMessenger} size="m">
+                            Связаться с продавцом
+                        </Button>
+                    )}
                 </Div>
             </div>
         </Group>
@@ -125,8 +136,9 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
 
 const UserLot: FC<LotProps> = ({ lot, rootStore, openDatePickerModal }) => {
     function removeLot() {
-        rootStore.lotsStore.removeLotById(lot.id);
-        rootStore.uiStore.go(RouteName.ALL_LOTS);
+        rootStore.lotsStore.closeLot().then(() => {
+            rootStore.uiStore.go(RouteName.ALL_LOTS);
+        });
     }
     function isTimeOver() {
         return new Date(lot.biddingEnd).getTime() < new Date().getTime();
@@ -153,7 +165,7 @@ const UserLot: FC<LotProps> = ({ lot, rootStore, openDatePickerModal }) => {
                 </div>
                 <Div className={style.userLot__buttons}>
                     <ButtonGroup stretched>
-                        {!isTimeOver && (
+                        {!isTimeOver() && (
                             <Button
                                 stretched
                                 size="m"
@@ -165,13 +177,25 @@ const UserLot: FC<LotProps> = ({ lot, rootStore, openDatePickerModal }) => {
                                 изменить
                             </Button>
                         )}
+                        {isTimeOver() && lot.status !== 'closed' && (
+                            <Button
+                                stretched
+                                size="m"
+                                onClick={() => {
+                                    rootStore.lotsStore.currentLot = lot;
+                                    openDatePickerModal();
+                                }}
+                            >
+                                возобновить
+                            </Button>
+                        )}
                         <Button
                             appearance="negative"
                             stretched
                             size="m"
                             onClick={removeLot}
                         >
-                            удалить
+                            закрыть
                         </Button>
                     </ButtonGroup>
                 </Div>

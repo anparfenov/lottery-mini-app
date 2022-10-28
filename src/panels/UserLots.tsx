@@ -25,41 +25,46 @@ type ScrollableTabsProps = {
     setSelected: any;
 };
 
-const ScrollableTabs: FC<ScrollableTabsProps> = observer(({ selected, setSelected }) => {
-    return (
-        <Group>
-            <Tabs>
-                <HorizontalScroll arrowSize="m">
-                    <TabsItem
-                        selected={selected === UserLotsTab.BUY}
-                        onClick={() => setSelected(UserLotsTab.BUY)}
-                    >
-                        Покупаю
-                    </TabsItem>
-                    <TabsItem
-                        selected={selected === UserLotsTab.SELL}
-                        onClick={() => setSelected(UserLotsTab.SELL)}
-                    >
-                        Продаю
-                    </TabsItem>
-                    <TabsItem
-                        selected={selected === UserLotsTab.COMPLETED}
-                        onClick={() => setSelected(UserLotsTab.COMPLETED)}
-                    >
-                        Завершено
-                    </TabsItem>
-                </HorizontalScroll>
-            </Tabs>
-        </Group>
-    );
-});
+const ScrollableTabs: FC<ScrollableTabsProps> = observer(
+    ({ selected, setSelected }) => {
+        return (
+            <Group>
+                <Tabs>
+                    <HorizontalScroll arrowSize="m">
+                        <TabsItem
+                            selected={selected === UserLotsTab.BUY}
+                            onClick={() => setSelected(UserLotsTab.BUY)}
+                        >
+                            Покупаю
+                        </TabsItem>
+                        <TabsItem
+                            selected={selected === UserLotsTab.SELL}
+                            onClick={() => setSelected(UserLotsTab.SELL)}
+                        >
+                            Продаю
+                        </TabsItem>
+                        <TabsItem
+                            selected={selected === UserLotsTab.COMPLETED}
+                            onClick={() => setSelected(UserLotsTab.COMPLETED)}
+                        >
+                            Завершено
+                        </TabsItem>
+                    </HorizontalScroll>
+                </Tabs>
+            </Group>
+        );
+    }
+);
 
 type UserLogsProps = {
     rootStore: RootStore;
 };
 export const UserLotsBuy: FC<UserLogsProps> = observer(({ rootStore }) => {
     useEffect(() => {
-        rootStore.lotsStore.fetchPageByStatus(1, 'sales');
+        rootStore.lotsStore.fetchPageByType(1, UserLotsTab.BUY);
+        return () => {
+            rootStore.lotsStore.lotsToBuy = [];
+        };
     }, []);
     function goToLot(lot: Lot) {
         rootStore.lotsStore.currentLot = lot;
@@ -71,6 +76,7 @@ export const UserLotsBuy: FC<UserLogsProps> = observer(({ rootStore }) => {
                 Array.isArray(rootStore.lotsStore.lotsToBuy) &&
                 rootStore.lotsStore.lotsToBuy.map((lot) => (
                     <LotCell
+                        userId={rootStore.appStore.appLaunchParams.vk_user_id}
                         key={lot.id}
                         goToLot={() => goToLot(lot)}
                         lot={lot}
@@ -83,7 +89,10 @@ export const UserLotsBuy: FC<UserLogsProps> = observer(({ rootStore }) => {
 
 export const UserLotsSell: FC<UserLogsProps> = observer(({ rootStore }) => {
     useEffect(() => {
-        rootStore.lotsStore.fetchPageByStatus(1);
+        rootStore.lotsStore.fetchPageByType(1, UserLotsTab.SELL);
+        return () => {
+            rootStore.lotsStore.lotsToSell = [];
+        };
     }, []);
     function goToLot(lot: Lot) {
         rootStore.lotsStore.currentLot = lot;
@@ -95,6 +104,7 @@ export const UserLotsSell: FC<UserLogsProps> = observer(({ rootStore }) => {
                 Array.isArray(rootStore.lotsStore.lotsToSell) &&
                 rootStore.lotsStore.lotsToSell?.map((lot) => (
                     <LotCell
+                        userId={rootStore.appStore.appLaunchParams.vk_user_id}
                         key={lot.id}
                         goToLot={() => goToLot(lot)}
                         lot={lot}
@@ -108,7 +118,10 @@ export const UserLotsSell: FC<UserLogsProps> = observer(({ rootStore }) => {
 export const UserLotsCompleted: FC<UserLogsProps> = observer(
     ({ rootStore }) => {
         useEffect(() => {
-            rootStore.lotsStore.fetchPageByStatus(1, 'closed');
+            rootStore.lotsStore.fetchPageByType(1, UserLotsTab.COMPLETED);
+            return () => {
+                rootStore.lotsStore.lotsCompleted = [];
+            };
         }, []);
         function goToLot(lot: Lot) {
             rootStore.lotsStore.currentLot = lot;
@@ -120,6 +133,9 @@ export const UserLotsCompleted: FC<UserLogsProps> = observer(
                     Array.isArray(rootStore.lotsStore.lotsCompleted) &&
                     rootStore.lotsStore.lotsCompleted.map((lot) => (
                         <LotCell
+                            userId={
+                                rootStore.appStore.appLaunchParams.vk_user_id
+                            }
                             key={lot.id}
                             goToLot={() => goToLot(lot)}
                             lot={lot}
@@ -147,7 +163,9 @@ export const UserLots: FC<Props> = observer(({ id, rootStore }) => {
             </PanelHeader>
             <ScrollableTabs
                 selected={rootStore.uiStore.userRouteSelectedTab}
-                setSelected={rootStore.uiStore.setUserRouteSelectedTab.bind(rootStore.uiStore)}
+                setSelected={rootStore.uiStore.setUserRouteSelectedTab.bind(
+                    rootStore.uiStore
+                )}
             />
             {rootStore.uiStore.userRouteSelectedTab === UserLotsTab.BUY && (
                 <UserLotsBuy rootStore={rootStore} />

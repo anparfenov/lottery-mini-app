@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { Lot, LotDto } from '../features/lot';
-import { Sort } from './uiStore';
+import { Sort, UserLotsTab } from './uiStore';
 import { RootStore } from './rootStore';
 import {
     apiCreateLot,
@@ -45,8 +45,17 @@ export class LotsStore {
         this.lotsList.push(lot);
     }
 
-    removeLotById(id: any) {
-        this.lotsList = this.lotsList.filter((lot) => lot.id !== id);
+    closeLot() {
+        const lotDto = {
+            title: this.currentLot.title,
+            description: this.currentLot.description,
+            address: '11',
+            priceStart: this.currentLot.priceStart,
+            priceStep: this.currentLot.priceStep,
+            biddingEnd: this.currentLot.biddingEnd,
+            status: 'closed' as any,
+        };
+        return this.createLot(lotDto, this.currentLot.id, true);
     }
 
     changeBiddingEnd(date: string) {
@@ -58,6 +67,7 @@ export class LotsStore {
             priceStart: this.currentLot.priceStart,
             priceStep: this.currentLot.priceStep,
             biddingEnd: date,
+            status: 'open' as any,
         };
         this.createLot(lotDto, this.currentLot.id, true);
     }
@@ -72,6 +82,7 @@ export class LotsStore {
         this.currentLot = lot;
     }
 
+    // TODO rename
     async createLot(lot: LotDto, id?: number, isUpdate?: boolean) {
         if (isUpdate && id) {
             return apiUpdateLot({
@@ -133,34 +144,67 @@ export class LotsStore {
         }
     }
 
-    async fetchPageByStatus(page: number = 1, status?: LotStatus) {
-        let params: any = {
-            userHeaders: this.rootStore.appStore.extractHeaders(),
-            page,
-            limit: this.itemsPerPage,
-        };
-        if (status) {
-            params = {...params, status }
-        }
-        if (status !== 'sales') {
-            params = {...params, isMy: true, isOnlyBet: true }
-        }
-        const res = await apiGetLots(params);
-        console.log('fetch by status', res);
-        runInAction(() => {
-            if (res) {
-                if (status === 'sales') {
-                    this.lotsToBuy =
-                        !Array.isArray(res) && res.error ? [] : res;
-                } else if (status === 'closed') {
-                    this.lotsCompleted =
-                        !Array.isArray(res) && res.error ? [] : res;
-                } else {
-                    this.lotsToSell =
-                        !Array.isArray(res) && res.error ? [] : res;
-                }
+    async fetchPageByType(page: number = 1, type: UserLotsTab) {
+        if (type === UserLotsTab.BUY) {
+            const statuses = ['open', 'sales'];
+            for (let status of statuses) {
+                let params: any = {
+                    userHeaders: this.rootStore.appStore.extractHeaders(),
+                    page,
+                    status,
+                    limit: 10,
+                    isOnlyBet: true,
+                    isMy: 'nope',
+                };
+                const res = await apiGetLots(params);
+                console.log('fetch by status', res);
+                runInAction(() => {
+                    if (res && Array.isArray(res)) {
+                        // @ts-ignore
+                        this.lotsToBuy = [...this.lotsToBuy, ...res];
+                    }
+                });
             }
-        });
+        } else if (type === UserLotsTab.SELL) {
+            const statuses = ['open', 'sales'];
+            for (let status of statuses) {
+                let params: any = {
+                    userHeaders: this.rootStore.appStore.extractHeaders(),
+                    page,
+                    status,
+                    limit: 10,
+                    isMy: true,
+                };
+                const res = await apiGetLots(params);
+                console.log('fetch by status', res);
+                runInAction(() => {
+                    if (res && Array.isArray(res)) {
+                        // @ts-ignore
+                        this.lotsToSell = [...this.lotsToSell, ...res];
+                    }
+                });
+            }
+        } else if (type === UserLotsTab.COMPLETED) {
+            const statuses = ['closed'];
+            for (let status of statuses) {
+                let params: any = {
+                    userHeaders: this.rootStore.appStore.extractHeaders(),
+                    page,
+                    status,
+                    limit: 10,
+                    isOnlyBet: true,
+                    isMy: 'nope',
+                };
+                const res = await apiGetLots(params);
+                console.log('fetch by status', res);
+                runInAction(() => {
+                    if (res && Array.isArray(res)) {
+                        // @ts-ignore
+                        this.lotsCompleted = [...this.lotsCompleted, ...res];
+                    }
+                });
+            }
+        }
     }
 
     async fetchCounters() {

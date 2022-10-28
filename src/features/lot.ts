@@ -1,8 +1,8 @@
-enum LotStatus {
-    BUY = 'buy',
-    SELL = 'sell',
-    COMPLETED = 'completed',
-}
+// enum LotStatus {
+//     BUY = 'buy',
+//     SELL = 'sell',
+//     COMPLETED = 'completed',
+// }
 
 export type Image = {
     id: number,
@@ -22,7 +22,7 @@ export type Lot = {
     biddingEnd: string;
     authorId?: number;
     address?: string;
-    status?: LotStatus;
+    status?: 'open' | 'sales' | 'closed' | 'draft';
     lastBidder?: number;
     currentBid?: number;
 };
@@ -34,4 +34,5 @@ export type LotDto = {
     priceStart?: number;
     priceStep?: number;
     biddingEnd?: string;
+    status?: 'open' | 'sales' | 'closed' | 'draft';
 };

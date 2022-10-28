@@ -28,3 +28,9 @@
     font-size: 13px;
     font-weight: bold;
 }
+
+.LotCard__status {
+    padding: 2px;
+    border-radius: 4px;
+    margin-top: 4px;
+}
