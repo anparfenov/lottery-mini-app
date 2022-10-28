@@ -10,7 +10,7 @@ import {
     Panel,
     PanelHeader,
 } from '@vkontakte/vkui';
-import React, { FC, SyntheticEvent, useMemo, useState } from 'react';
+import React, { FC, SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { MyImage } from '../components/MyImage/MyImage';
 import { Lot } from '../features/lot';
 import { RootStore } from '../stores/rootStore';
@@ -19,6 +19,7 @@ import { format as dateFnsFormat } from 'date-fns';
 
 // @ts-ignore
 import style from './JustLot.module.css';
+import { transformToDate, useTimer } from '../stores/timer';
 
 type LotProps = {
     lot: Lot;
@@ -27,10 +28,24 @@ type LotProps = {
 };
 
 const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
-    const [bet, setBet] = useState<number>(
-        rootStore.lotsStore.currentLot.bets ?? 0
+    const [bet, setBet] = useState<string>(
+        String(rootStore.lotsStore.currentLot.bets) ?? ''
     );
     const [dirty, setDirty] = useState<Record<string, boolean>>({});
+
+    const { start, time, stop} = useTimer()
+    useEffect(() => {
+        const biddingDate = (new Date(lot.biddingEnd)).getTime();
+        const minutesLeft = Math.round((biddingDate - Date.now()) / 1000 / 60);    
+        const endDate = minutesLeft && minutesLeft < 60 && minutesLeft > 0 ? biddingDate - Date.now() : 0;
+        if (minutesLeft < 60 && minutesLeft > 0) {
+            start(endDate)
+        }
+
+        return () => {
+            stop()
+        }
+    }, []) 
 
     function isTimeOver() {
         return new Date(lot.biddingEnd).getTime() < new Date().getTime();
@@ -41,9 +56,9 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
             return true;
         }
         if (lot.currentBid) {
-            return bet >= lot.currentBid + lot.priceStep;
+            return parseInt(bet, 10) >= lot.currentBid + lot.priceStep;
         }
-        return bet >= lot.priceStart + lot.priceStep;
+        return parseInt(bet, 10) >= lot.priceStart + lot.priceStep;
     }, [bet, dirty]);
 
     const isUserWinner = useMemo(() => {
@@ -74,10 +89,14 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                 <div style={{ padding: '0 16px', marginTop: '6px' }}>
                     шаг: {lot.priceStep}
                 </div>
-                <div className={style.Lot__biddingEnd}>
+                {time === 0 && <div className={style.UserLot__biddingEnd}>
                     до конца ставок:{' '}
-                    {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}
-                </div>
+                    {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy HH:mm')}
+                </div>}
+                {time > 0 && <div className={style.UserLot__biddingEnd}>
+                    до конца ставок:{' '}
+                    {transformToDate(time)}
+                </div>}
                 {!isTimeOver() && (
                     <div>
                         <FormItem
@@ -93,9 +112,7 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                                 type="number"
                                 value={bet}
                                 onChange={(e: SyntheticEvent) => {
-                                    const value = Number(
-                                        (e.target as HTMLInputElement).value
-                                    );
+                                    const value = (e.target as HTMLInputElement).value
                                     setDirty({ bet: true });
                                     setBet(value);
                                 }}
@@ -109,10 +126,9 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                             stretched
                             size="m"
                             onClick={() => {
-                                if (bet >= lot.priceStart + lot.priceStep) {
-                                    rootStore.lotsStore.makeBet(bet, lot.id);
+                                if (parseInt(bet, 10) >= lot.priceStart + lot.priceStep) {
+                                    rootStore.lotsStore.makeBet(parseInt(bet, 10), lot.id);
                                 }
-                                rootStore.uiStore.go(RouteName.ALL_LOTS);
                             }}
                         >
                             сделать ставку
@@ -135,6 +151,20 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
 };
 
 const UserLot: FC<LotProps> = ({ lot, rootStore, openDatePickerModal }) => {
+    const { start, time, stop} = useTimer()
+    useEffect(() => {
+        const biddingDate = (new Date(lot.biddingEnd)).getTime();
+        const minutesLeft = Math.round((biddingDate - Date.now()) / 1000 / 60);    
+        const endDate = minutesLeft && minutesLeft < 60 && minutesLeft > 0 ? biddingDate - Date.now() : 0;
+        if (minutesLeft < 60 && minutesLeft > 0) {
+            start(endDate)
+        }
+
+        return () => {
+            console.log('clean up')
+            stop()
+        }
+    }, []) 
     function removeLot() {
         rootStore.lotsStore.closeLot().then(() => {
             rootStore.uiStore.go(RouteName.ALL_LOTS);
@@ -159,10 +189,14 @@ const UserLot: FC<LotProps> = ({ lot, rootStore, openDatePickerModal }) => {
                 <div className={style.Lot__priceStart}>
                     ставка: {lot.currentBid}
                 </div>
-                <div className={style.UserLot__biddingEnd}>
+                {time === 0 && <div className={style.UserLot__biddingEnd}>
                     до конца ставок:{' '}
-                    {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}
-                </div>
+                    {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy HH:mm')}
+                </div>}
+                {time > 0 && <div className={style.UserLot__biddingEnd}>
+                    до конца ставок:{' '}
+                    {transformToDate(time)}
+                </div>}
                 <Div className={style.userLot__buttons}>
                     <ButtonGroup stretched>
                         {!isTimeOver() && (

@@ -41,7 +41,6 @@ export const DatePickerModal: FC<DatePickerModalProps> = observer(
 
         function handleDate(e: SyntheticEvent) {
             setDirty({ ...dirty, date: true });
-            console.log('hello');
             setDate((e.target as HTMLInputElement).value);
         }
     
@@ -52,7 +51,6 @@ export const DatePickerModal: FC<DatePickerModalProps> = observer(
         }
 
         function transformToDate(date: any = '2022-01-01', time: any = '00:00'): string {
-            console.log('transformToDate', date, time)
             if (date === '') {
                 date = '2022-01-01'
             }

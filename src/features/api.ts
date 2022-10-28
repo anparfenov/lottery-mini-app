@@ -10,14 +10,12 @@ export function apiCreateLot({ userHeaders, lot }: any) {
         },
         body,
     }).then((res) => {
-        console.log('create lot', res);
         return res.json();
     });
 }
 
 export function apiUpdateLot({ userHeaders, lot, id }: any) {
     const body = JSON.stringify(lot);
-    console.log('apiCreateLot', body);
     return fetch(`${API_URL}/lots/${id}`, {
         method: 'PATCH',
         headers: {
@@ -35,11 +33,12 @@ export type LotStatus = 'open' | 'sales' | 'closed' | 'draft';
 export type GetLotsProps = {
     page: number;
     limit: number;
-    order?: 'id' | 'priceStart';
+    order?: 'id' | 'priceStart' | 'createdAt';
     dest?: 'ASC' | 'DESC';
     isMy?: boolean;
     status?: LotStatus;
     userHeaders: any;
+    isOnlyBet?: boolean;
 };
 
 export function apiGetLots({
@@ -50,6 +49,7 @@ export function apiGetLots({
     order,
     dest,
     status,
+    isOnlyBet,
 }: GetLotsProps) {
     const params = {
         page: String(page),
@@ -57,6 +57,7 @@ export function apiGetLots({
         order,
         dest,
         status,
+        isOnlyBet,
         isMy: isMy ? String(isMy) : undefined,
     }
     var filteredParams = Object.keys(params).reduce((p, c) => {
@@ -101,5 +102,14 @@ export function apiUploadImage({file, id, userHeaders}: any) {
             ...userHeaders
         },
         body: formData
+    }).then((res) => res.json());
+}
+
+export function apiGetById({id, userHeaders}: any) {
+    return fetch(`${API_URL}/lots/${id}`, {
+        method: 'GET',
+        headers: {
+            ...userHeaders
+        },
     }).then((res) => res.json());
 }

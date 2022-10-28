@@ -12,7 +12,7 @@ import {
     Textarea,
 } from '@vkontakte/vkui';
 import { format } from 'date-fns';
-import React, { FC, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ImageInput } from '../components/ImageInput/ImageInput';
 import { RootStore } from '../stores/rootStore';
 
@@ -35,11 +35,11 @@ export const LotCreator: FC<LotCreatorProps> = ({
     const [description, setDescription] = useState<string>(
         rootStore.lotsStore.currentLot?.description ?? ''
     );
-    const [priceStart, setPriceStart] = useState<number>(
-        rootStore.lotsStore.currentLot?.priceStart ?? 0
+    const [priceStart, setPriceStart] = useState<string>(
+        String(rootStore.lotsStore.currentLot?.priceStart) ?? ''
     );
-    const [priceStep, setPriceStep] = useState<number>(
-        rootStore.lotsStore.currentLot?.priceStep ?? 0
+    const [priceStep, setPriceStep] = useState<string>(
+        String(rootStore.lotsStore.currentLot?.priceStep) ?? ''
     );
     const [date, setDate] = useState<string>(
         rootStore.lotsStore.currentLot?.biddingEnd
@@ -61,6 +61,18 @@ export const LotCreator: FC<LotCreatorProps> = ({
 
     const [dirty, setDirty] = useState<Record<string, boolean>>({});
 
+    const [isTitleValid, setIsTitleValid] = useState<boolean>(true);
+    const [isDescriptionValid, setIsDescriptionValid] = useState<boolean>(true);
+
+    const [isPriceStartValid, setIsPriceStartValid] = useState<boolean>(true);
+
+    const [isPriceStepValid, setIsPriceStepValid] = useState<boolean>(true);
+
+    const [isDateValid, setIsDateValid] = useState<boolean>(true);
+
+
+    const [imageError, setImageError] = useState<boolean>(false);
+
     function handleTitleInput(e: SyntheticEvent) {
         setDirty({ ...dirty, title: true });
         setTitle((e.target as HTMLInputElement).value);
@@ -73,20 +85,20 @@ export const LotCreator: FC<LotCreatorProps> = ({
     }
 
     function handlePriceStartInput(e: SyntheticEvent) {
+        console.log('price start', (e.target as HTMLInputElement).value);
         setDirty({ ...dirty, priceStart: true });
 
-        setPriceStart(Number((e.target as HTMLInputElement).value));
+        setPriceStart((e.target as HTMLInputElement).value);
     }
 
     function handlePriceStepInput(e: SyntheticEvent) {
         setDirty({ ...dirty, priceStep: true });
 
-        setPriceStep(Number((e.target as HTMLInputElement).value));
+        setPriceStep((e.target as HTMLInputElement).value);
     }
 
     function handleDate(e: SyntheticEvent) {
         setDirty({ ...dirty, date: true });
-        console.log('hello');
         setDate((e.target as HTMLInputElement).value);
     }
 
@@ -97,7 +109,6 @@ export const LotCreator: FC<LotCreatorProps> = ({
     }
 
     function transformToDate(date: any = '2022-01-01', time: any = '00:00'): string {
-        console.log('transformToDate', date, time)
         if (date === '') {
             date = '2022-01-01'
         }
@@ -105,7 +116,7 @@ export const LotCreator: FC<LotCreatorProps> = ({
             time = '00:00'
         }
         return `${date}T${time}:00`;
-    }
+    }    
 
     function handleSubmit(e: SyntheticEvent) {
         e.preventDefault();
@@ -114,8 +125,8 @@ export const LotCreator: FC<LotCreatorProps> = ({
             title,
             description,
             address: '11',
-            priceStart,
-            priceStep,
+            priceStart: Number(priceStart),
+            priceStep: Number(priceStep),
             biddingEnd: transformToDate(date, time),
         };
         rootStore.lotsStore
@@ -134,58 +145,78 @@ export const LotCreator: FC<LotCreatorProps> = ({
 
     function handleImageUpload(file: any) {
         if (file) {
+            setImageError(false);
             setImageFile(file);
         }
     }
 
-    const isTitleValid = useCallback(() => {
-        if (title && title.length > 0) {
-            return true;
-        } else if (!isEditing) {
-            return !dirty['title'];
-        }
-        return false;
-    }, [title, dirty]);
+    function handleImageError() {
+        setImageError(true);
+    }
 
-    const isDescriptionValid = useCallback(() => {
-        if (description && description.length > 0) {
-            return true;
+    useEffect(() => {
+        if (!isEditing && !dirty['title']) {
+            setIsTitleValid(true);
+        } else if (title && title.length > 0) {
+            setIsTitleValid(true);
         } else if (!isEditing) {
-            return !dirty['description'];
+            setIsTitleValid(!dirty['title']);
+        } else {
+            setIsTitleValid(false);
         }
-        return false;
-    }, [title, dirty]);
+    }, [title])
 
-    const isPriceStartValid = useCallback(() => {
-        if (priceStart && typeof priceStart === 'number' && priceStart > 0) {
-            return true;
+    useEffect(() => {
+        if (!isEditing && !dirty['description']) {
+            setIsDescriptionValid(true);
+        } else if (description && description.length > 0) {
+            setIsDescriptionValid(true);
         } else if (!isEditing) {
-            return !dirty['priceStart'];
+            setIsDescriptionValid(!dirty['description']);
+        } else {
+            setIsDescriptionValid(false);
         }
-        return false;
-    }, [priceStart, dirty]);
+    }, [description])
 
-    const isPriceStepValid = useCallback(() => {
-        if (priceStep && typeof priceStep === 'number' && priceStep > 0) {
-            return true;
+    useEffect(() => {
+        console.log('ps', parseInt(priceStart, 10))
+        if (!isEditing && !dirty['priceStart']) {
+            setIsPriceStartValid(true);
+        } else if (priceStart && parseInt(priceStart, 10) > 0) {
+            setIsPriceStartValid(true);
         } else if (!isEditing) {
-            return !dirty['priceStep'];
+            setIsPriceStartValid(!dirty['priceStart']);
+        } else {
+            setIsPriceStartValid(false);
         }
-        return false;
-    }, [priceStep, dirty]);
+    }, [priceStart])
 
-    const isDateValid = useMemo(() => {
+    useEffect(() => {
+        if (!isEditing && !dirty['priceStep']) {
+            setIsPriceStepValid(true);
+        } else if (priceStep && parseInt(priceStep, 10) > 0) {
+            setIsPriceStepValid(true);
+        } else if (!isEditing) {
+            setIsPriceStepValid(!dirty['priceStep']);
+        } else {
+            setIsPriceStepValid(false);
+        }
+    }, [priceStep])
+
+    useEffect(() => {
+        if (!isEditing && !dirty['date']) {
+            setIsDateValid(true);
+        } 
         const transformedDate = transformToDate(date, time);
-        console.log('trans time', new Date(transformedDate));
-        console.log('now time', Date.now());
 
         if ((new Date(transformedDate).getTime() > Date.now())) {
-            return true;
+            setIsDateValid(true);
         } else if (!isEditing) {
-            return !dirty['date'];
+            setIsDateValid(!dirty['date']);
+        } else {
+            setIsDateValid(false);
         }
-        return false;
-    }, [date, dirty, time]);
+    }, [date])
 
     return (
         <Panel id={id}>
@@ -200,14 +231,19 @@ export const LotCreator: FC<LotCreatorProps> = ({
             </PanelHeader>
             <Group>
                 <FormLayout onSubmit={handleSubmit}>
-                    <FormItem top="image">
+                    <FormItem 
+                    status={!imageError ? 'default' : 'error'}
+                    bottom={
+                        !imageError ? '' : 'Изображение невалидно, возможно превышен лимит размера 200KB'
+                    }
+                    top="image">
                         <div
                             style={{
                                 display: 'flex',
                                 justifyContent: 'center',
                             }}
                         >
-                            <ImageInput onUpload={handleImageUpload} />
+                            <ImageInput onError={handleImageError} onUpload={handleImageUpload} />
                         </div>
                     </FormItem>
                     <FormItem
@@ -269,7 +305,7 @@ export const LotCreator: FC<LotCreatorProps> = ({
                         bottom={
                             isDateValid
                                 ? ''
-                                : 'Пожалуйста, введите дату'
+                                : 'Пожалуйста, введите верную дату (должна быть больше нынешней)'
                         }
                         top="время окончания ставки"
                     >

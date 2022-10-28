@@ -28,30 +28,28 @@ type ScrollableTabsProps = {
 const ScrollableTabs: FC<ScrollableTabsProps> = observer(
     ({ selected, setSelected }) => {
         return (
-            <Group>
-                <Tabs>
-                    <HorizontalScroll arrowSize="m">
-                        <TabsItem
-                            selected={selected === UserLotsTab.BUY}
-                            onClick={() => setSelected(UserLotsTab.BUY)}
-                        >
-                            Покупаю
-                        </TabsItem>
-                        <TabsItem
-                            selected={selected === UserLotsTab.SELL}
-                            onClick={() => setSelected(UserLotsTab.SELL)}
-                        >
-                            Продаю
-                        </TabsItem>
-                        <TabsItem
-                            selected={selected === UserLotsTab.COMPLETED}
-                            onClick={() => setSelected(UserLotsTab.COMPLETED)}
-                        >
-                            Завершено
-                        </TabsItem>
-                    </HorizontalScroll>
-                </Tabs>
-            </Group>
+            <Tabs>
+                <HorizontalScroll arrowSize="m">
+                    <TabsItem
+                        selected={selected === UserLotsTab.BUY}
+                        onClick={() => setSelected(UserLotsTab.BUY)}
+                    >
+                        Покупаю
+                    </TabsItem>
+                    <TabsItem
+                        selected={selected === UserLotsTab.SELL}
+                        onClick={() => setSelected(UserLotsTab.SELL)}
+                    >
+                        Продаю
+                    </TabsItem>
+                    <TabsItem
+                        selected={selected === UserLotsTab.COMPLETED}
+                        onClick={() => setSelected(UserLotsTab.COMPLETED)}
+                    >
+                        Завершено
+                    </TabsItem>
+                </HorizontalScroll>
+            </Tabs>
         );
     }
 );

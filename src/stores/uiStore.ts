@@ -4,7 +4,7 @@ import { RootStore } from './rootStore';
 
 export type Sort = {
     name: string;
-    by: 'id' | 'priceStart';
+    by: 'id' | 'priceStart' | 'createdAt';
     sortFn: any;
     isEnabled: boolean;
     ord: 'ASC' | 'DESC';

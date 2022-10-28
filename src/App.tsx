@@ -35,7 +35,6 @@ export const App = observer(() => {
         bridge
             .send('VKWebAppGetLaunchParams')
             .then((data: any) => {
-                console.log('app info', data);
                 if (data.vk_app_id) {
                     rootStore.appStore.setAppLaunchParams(data);
                     return bridge.send('VKWebAppGetUserInfo', { user_id: data.vk_user_id })
@@ -44,7 +43,6 @@ export const App = observer(() => {
             })
             .then((res: UserInfo | null) => {
                 if (res) {
-                    console.log('user info', res);
                     const user: User = {
                         id: res.id,
                         name: `${res.first_name} ${res.last_name}`,
@@ -97,7 +95,13 @@ export const App = observer(() => {
                             id={RouteName.LOT_CREATOR}
                             rootStore={rootStore}
                             isEditing={Boolean(rootStore.lotsStore.currentLot)}
-                            onCreated={() => {setSnackbar('newlot'); rootStore.uiStore.go(RouteName.ALL_LOTS);}}
+                            onCreated={() => {
+                                setSnackbar('newlot');
+                                rootStore.lotsStore.fetchCounters().then(() => {
+                                    return rootStore.lotsStore.fetchPage(1);
+                                });
+                                 rootStore.uiStore.go(RouteName.ALL_LOTS);
+                            }}
                         />
                     </View>
                     {snackbar && (

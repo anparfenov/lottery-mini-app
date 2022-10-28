@@ -16,6 +16,7 @@
 
 .Lot__priceStart {
     margin-top: 6px;
+    font-weight: bold;
     padding: var(--padding);
 }
 
@@ -23,6 +24,7 @@
     margin-top: 6px;
     color: orange;
     padding: var(--padding);
+    font-weight: bold;
 }
 
 .Lot__description {
@@ -57,10 +59,17 @@
     margin-top: 6px;
 }
 
+.UserLot__priceStart {
+    padding: var(--padding);
+    font-weight: bold;
+    margin-top: 6px;
+}
+
 .UserLot__biddingEnd {
     margin-top: 6px;
     color: orange;
     padding: var(--padding);
+    font-weight: bold;
 }
 
 .UserLot__buttons {

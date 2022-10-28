@@ -7,9 +7,12 @@ import style from './ImageInput.module.css';
 
 type Props = {
     onUpload: any;
+    onError: any;
 }
 
-export const ImageInput: FC<Props> = ({ onUpload }) => {
+const MAX_FILE_SIZE = 200000;
+
+export const ImageInput: FC<Props> = ({ onUpload, onError }) => {
     const [src, setSrc] = useState('');
     const inputRef = useRef(null);
 
@@ -23,7 +26,10 @@ export const ImageInput: FC<Props> = ({ onUpload }) => {
     };
     const preview = async (event: SyntheticEvent) => {
         const file = (event.target as HTMLInputElement).files[0];
-        console.log('file', file);
+        if (file.size > MAX_FILE_SIZE) {
+            onError();
+            return;
+        }
         const url = await readURL(file);
         setSrc(url as string);
         onUpload(file);

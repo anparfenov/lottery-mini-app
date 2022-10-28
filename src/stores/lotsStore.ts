@@ -4,12 +4,12 @@ import { Sort, UserLotsTab } from './uiStore';
 import { RootStore } from './rootStore';
 import {
     apiCreateLot,
+    apiGetById,
     apiGetCounters,
     apiGetLots,
     apiMakeBet,
     apiUpdateLot,
     apiUploadImage,
-    LotStatus,
 } from '../features/api';
 
 type Counters = {
@@ -82,6 +82,13 @@ export class LotsStore {
         this.currentLot = lot;
     }
 
+    fetchById(id: number) {
+        return apiGetById({
+            userHeaders: this.rootStore.appStore.extractHeaders(),
+            id: id,
+        })
+    }
+
     // TODO rename
     async createLot(lot: LotDto, id?: number, isUpdate?: boolean) {
         if (isUpdate && id) {
@@ -107,10 +114,17 @@ export class LotsStore {
     }
 
     makeBet(bet: number, lotId: number) {
-        apiMakeBet({
+        return apiMakeBet({
             bet,
             lotId,
             userHeaders: this.rootStore.appStore.extractHeaders(),
+        }).then(() => {
+            return this.fetchById(lotId);
+        }).then(result => {
+            console.log('makeBet', result);
+            runInAction(() => {
+                this.currentLot = result;
+            })
         });
     }
 
@@ -122,7 +136,6 @@ export class LotsStore {
             order: sort.by,
             dest: sort.ord,
         });
-        console.log(res);
         runInAction(() => {
             this.lotsList = res;
         });
@@ -137,7 +150,6 @@ export class LotsStore {
                 page,
                 limit: this.itemsPerPage,
             });
-            console.log(res);
             runInAction(() => {
                 this.lotsList = res;
             });
@@ -154,10 +166,9 @@ export class LotsStore {
                     status,
                     limit: 10,
                     isOnlyBet: true,
-                    isMy: 'nope',
+                    isMy: false,
                 };
                 const res = await apiGetLots(params);
-                console.log('fetch by status', res);
                 runInAction(() => {
                     if (res && Array.isArray(res)) {
                         // @ts-ignore
@@ -176,7 +187,6 @@ export class LotsStore {
                     isMy: true,
                 };
                 const res = await apiGetLots(params);
-                console.log('fetch by status', res);
                 runInAction(() => {
                     if (res && Array.isArray(res)) {
                         // @ts-ignore
@@ -185,7 +195,7 @@ export class LotsStore {
                 });
             }
         } else if (type === UserLotsTab.COMPLETED) {
-            const statuses = ['closed'];
+            const statuses = ['sales'];
             for (let status of statuses) {
                 let params: any = {
                     userHeaders: this.rootStore.appStore.extractHeaders(),
@@ -193,10 +203,9 @@ export class LotsStore {
                     status,
                     limit: 10,
                     isOnlyBet: true,
-                    isMy: 'nope',
+                    isMy: false,
                 };
                 const res = await apiGetLots(params);
-                console.log('fetch by status', res);
                 runInAction(() => {
                     if (res && Array.isArray(res)) {
                         // @ts-ignore
@@ -212,7 +221,6 @@ export class LotsStore {
             userHeaders: this.rootStore.appStore.extractHeaders(),
         }).then((counters: Counters) => {
             runInAction(() => {
-                console.log('coutners', counters);
                 this.counters = counters;
             });
         });

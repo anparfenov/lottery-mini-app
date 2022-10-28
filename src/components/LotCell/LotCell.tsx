@@ -1,7 +1,8 @@
 import { Avatar, SimpleCell } from '@vkontakte/vkui';
 import { format } from 'date-fns';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Lot } from '../../features/lot';
+import { transformToDate, useTimer } from '../../stores/timer';
 
 type Props = {
     lot: Lot;
@@ -10,6 +11,21 @@ type Props = {
 };
 
 export const LotCell: FC<Props> = ({ lot, goToLot, userId }) => {
+    const { start, time, stop} = useTimer()
+    useEffect(() => {
+        const biddingDate = (new Date(lot.biddingEnd)).getTime();
+        const minutesLeft = Math.round((biddingDate - Date.now()) / 1000 / 60);    
+        const endDate = minutesLeft && minutesLeft < 60 && minutesLeft > 0 ? biddingDate - Date.now() : 0;
+        if (minutesLeft < 60 && minutesLeft > 0) {
+            start(endDate)
+        }
+
+        return () => {
+            console.log('clean up')
+            stop()
+        }
+    }, []);
+    
     function getTitleColor(status: string, isMyBid: boolean) {
         if (status === 'closed') {
             return {
@@ -18,11 +34,11 @@ export const LotCell: FC<Props> = ({ lot, goToLot, userId }) => {
         } else if (status === 'sales') {
             if (isMyBid) {
                 return {
-                    color: 'green'
+                    color: 'goldenrod'
                 }
             }
             return {
-                color: 'yellow'
+                color: 'green'
             }
         }
         return {
@@ -39,8 +55,8 @@ export const LotCell: FC<Props> = ({ lot, goToLot, userId }) => {
                     alt={lot.title}
                 />
             }
-            after={<div>{lot.priceStart}</div>}
-            subtitle={`ставки до: ${format(new Date(lot.biddingEnd), 'yyyy-MM-dd')}`}
+            after={<div>цена: {lot.priceStart}</div>}
+            subtitle={time === 0 ? `ставки до: ${format(new Date(lot.biddingEnd), 'yyyy-MM-dd HH:mm')}` : `осталось: ${transformToDate(time)}`}
             onClick={goToLot}
         >
             <div style={getTitleColor(lot.status, lot.lastBidder === userId)}>{lot.title}</div>
