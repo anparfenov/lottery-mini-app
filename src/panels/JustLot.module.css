@@ -1,5 +1,11 @@
+.Lot {
+    --padding: 0 16px;
+    text-align: left;
+}
+
 .Lot__title {
-    margin: 4px 0;
+    padding: var(--padding);
+    margin: 6px 0;
 }
 
 .Lot__image {
@@ -9,14 +15,55 @@
 }
 
 .Lot__priceStart {
-    margin-top: 4px;
+    margin-top: 6px;
+    padding: var(--padding);
 }
 
 .Lot__biddingEnd {
-    margin-top: 4px;
+    margin-top: 6px;
     color: orange;
+    padding: var(--padding);
 }
 
 .Lot__description {
-    margin-top: 2px;
+    margin-top: 6px;
+    padding: var(--padding);
+}
+
+.UserLot {
+    --padding: 0 16px;
+    padding: var(--padding);
+    text-align: left;
+}
+
+.UserLot__title {
+    padding: var(--padding);
+    margin: 6px 0;
+}
+
+
+.UserLot__image {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.UserLot__description {
+    padding: var(--padding);
+}
+
+.UserLot__price {
+    padding: var(--padding);
+    margin-top: 6px;
+}
+
+.UserLot__biddingEnd {
+    margin-top: 6px;
+    color: orange;
+    padding: var(--padding);
+}
+
+.UserLot__buttons {
+    margin-top: 6px;
+    padding: var(--padding);
 }

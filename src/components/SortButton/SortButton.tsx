@@ -12,7 +12,7 @@ type Props = {
 export const SortButton: FC<Props> = ({ openSort, sortKey }) => {
   return (
     <div className={style.SortButton}>
-        <span>по: {sortKey.name}</span>
+        <span>{sortKey.name}</span>
         <IconButton onClick={openSort}><Icon20SortOutline /></IconButton>
     </div>
   )

@@ -29,6 +29,9 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
     const [bet, setBet] = useState<number>(
         rootStore.lotsStore.currentLot.bets ?? 0
     );
+    function isTimeOver() {
+        return new Date(lot.biddingEnd).getTime() < new Date().getTime();
+    }
     return (
         <Group>
             <div className={style.Lot}>
@@ -36,9 +39,12 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                     <MyImage src={lot.images?.[0]?.url} alt={lot.title} />
                 </div>
                 <h2 className={style.Lot__title}>{lot.title}</h2>
-                <div className={style.Lot__priceStart}>{lot.priceStart}</div>
+                <div className={style.Lot__description}>{lot.description}</div>
+                <div className={style.Lot__priceStart}>
+                    цена: {lot.priceStart}
+                </div>
                 <div className={style.Lot__biddingEnd}>
-                    until end:{' '}
+                    до конца ставок:{' '}
                     {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}
                 </div>
                 <div>
@@ -66,21 +72,26 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                             }}
                         />
                     </FormItem>
-                    <span>min step {lot.priceStep}</span>
                 </div>
-                <div className={style.Lot__description}>{lot.description}</div>
                 <Div>
-                    <Button
-                        stretched
-                        size="m"
-                        onClick={() => {
-                            if (bet >= lot.priceStart + lot.priceStep) {
-                                rootStore.lotsStore.makeBet(bet, lot.id);
-                            }
-                        }}
-                    >
-                        сделать ставку
-                    </Button>
+                    {!isTimeOver() && (
+                        <Button
+                            stretched
+                            size="m"
+                            onClick={() => {
+                                if (bet >= lot.priceStart + lot.priceStep) {
+                                    rootStore.lotsStore.makeBet(bet, lot.id);
+                                }
+                            }}
+                        >
+                            сделать ставку
+                        </Button>
+                    )}
+                    {isTimeOver() && (
+                        <Button stretched disabled={true} size="m">
+                            Аукцион завершен
+                        </Button>
+                    )}
                 </Div>
             </div>
         </Group>
@@ -94,19 +105,22 @@ const UserLot: FC<LotProps> = ({ lot, rootStore }) => {
     }
     return (
         <Group>
-            <div>
-                <MyImage src={lot.images?.[0]?.url} alt={lot.title} />
-                <h2>{lot.title}</h2>
-                <div>
-                    {lot.priceStart}
-                    {lot.bets}
+            <div className={style.UserLot}>
+                <div className={style.UserLot__image}>
+                    <MyImage src={lot.images?.[0]?.url} alt={lot.title} />
                 </div>
-                <div>
-                    until end:{' '}
+                <h2 className={style.UserLot__title}>{lot.title}</h2>
+                <div className={style.UserLot__description}>
+                    {lot.description}
+                </div>
+                <div className={style.UserLot__price}>
+                    цена: {lot.priceStart}
+                </div>
+                <div className={style.UserLot__biddingEnd}>
+                    до конца ставок:{' '}
                     {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}
                 </div>
-                <div>{lot.description}</div>
-                <div>
+                <Div className={style.userLot__buttons}>
                     <ButtonGroup stretched>
                         <Button
                             stretched
@@ -118,11 +132,16 @@ const UserLot: FC<LotProps> = ({ lot, rootStore }) => {
                         >
                             изменить
                         </Button>
-                        <Button stretched size="m" onClick={removeLot}>
+                        <Button
+                            appearance="negative"
+                            stretched
+                            size="m"
+                            onClick={removeLot}
+                        >
                             удалить
                         </Button>
                     </ButtonGroup>
-                </div>
+                </Div>
             </div>
         </Group>
     );
@@ -162,7 +181,7 @@ export const JustLot: FC<Props> = ({ id, rootStore }) => {
                     </IconButton>
                 }
             >
-                Этот лот
+                {rootStore.lotsStore.currentLot.title}
             </PanelHeader>
             {lot}
         </Panel>

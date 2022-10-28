@@ -87,6 +87,7 @@ export const App = observer(() => {
                         <LotCreator
                             id={RouteName.LOT_CREATOR}
                             rootStore={rootStore}
+                            isEditing={Boolean(rootStore.lotsStore.currentLot)}
                             onCreated={() => {setSnackbar('newlot'); rootStore.uiStore.go(RouteName.ALL_LOTS);}}
                         />
                     </View>

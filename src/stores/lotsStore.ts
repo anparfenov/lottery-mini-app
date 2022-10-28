@@ -2,12 +2,20 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { Lot, LotDto } from '../features/lot';
 import { Sort } from './uiStore';
 import { RootStore } from './rootStore';
-import { apiCreateLot, apiGetCounters, apiGetLots, apiMakeBet, apiUpdateLot, apiUploadImage, LotStatus } from '../features/api';
+import {
+    apiCreateLot,
+    apiGetCounters,
+    apiGetLots,
+    apiMakeBet,
+    apiUpdateLot,
+    apiUploadImage,
+    LotStatus,
+} from '../features/api';
 
 type Counters = {
     total: number;
     my: number;
-}
+};
 
 export class LotsStore {
     currentLot: Lot | null = null;
@@ -67,11 +75,19 @@ export class LotsStore {
     }
 
     async uploadImage(file: any, id: number) {
-        return apiUploadImage({ userHeaders: this.rootStore.appStore.extractHeaders(), file, id})
+        return apiUploadImage({
+            userHeaders: this.rootStore.appStore.extractHeaders(),
+            file,
+            id,
+        });
     }
 
     makeBet(bet: number, lotId: number) {
-        apiMakeBet({bet, lotId, userHeaders: this.rootStore.appStore.extractHeaders()})
+        apiMakeBet({
+            bet,
+            lotId,
+            userHeaders: this.rootStore.appStore.extractHeaders(),
+        });
     }
 
     async fetchSorted(page: number = 1, sort: Sort) {
@@ -80,7 +96,7 @@ export class LotsStore {
             page,
             limit: this.itemsPerPage,
             order: sort.by,
-            dest: sort.ord
+            dest: sort.ord,
         });
         console.log(res);
         runInAction(() => {
@@ -105,32 +121,42 @@ export class LotsStore {
     }
 
     async fetchPageByStatus(page: number = 1, status?: LotStatus) {
-        const res = await apiGetLots({
+        let params: any = {
             userHeaders: this.rootStore.appStore.extractHeaders(),
             page,
             status,
             limit: this.itemsPerPage,
-        });
-        console.log(res);
+        };
+        if (status === 'sales') {
+            params = {...params, isMy: true }
+        }
+        const res = await apiGetLots(params);
+        console.log('fetch by status', res);
         runInAction(() => {
             if (res) {
                 if (status === 'sales') {
-                    this.lotsToSell = !Array.isArray(res) && res.error ? [] : res;
+                    this.lotsToSell =
+                        !Array.isArray(res) && res.error ? [] : res;
                 } else if (status === 'closed') {
-                    this.lotsCompleted = !Array.isArray(res) && res.error ? [] : res;
+                    this.lotsCompleted =
+                        !Array.isArray(res) && res.error ? [] : res;
                 } else if (status === 'open') {
-                    this.lotsToBuy = !Array.isArray(res) && res.error ? [] : res;
+                    this.lotsToBuy =
+                        !Array.isArray(res) && res.error ? [] : res;
+                    console.log('lots to b', this.lotsToBuy);
                 }
             }
         });
     }
 
     async fetchCounters() {
-        apiGetCounters({ userHeaders: this.rootStore.appStore.extractHeaders() }).then((counters: Counters) => {
+        apiGetCounters({
+            userHeaders: this.rootStore.appStore.extractHeaders(),
+        }).then((counters: Counters) => {
             runInAction(() => {
                 console.log('coutners', counters);
-                this.counters = counters
-            })
-        })
+                this.counters = counters;
+            });
+        });
     }
 }

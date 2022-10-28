@@ -7,6 +7,8 @@ import {
     Pagination,
     Panel,
     PanelHeader,
+    useAdaptivity,
+    ViewWidth,
 } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { FC, useEffect, useState } from 'react';
@@ -24,6 +26,7 @@ type Props = {
 export const AllLots: FC<Props> = observer(
     ({ id, rootStore, openSortModal }) => {
         const [page, setPage] = useState(1);
+        const {viewWidth} = useAdaptivity();
         useEffect(() => {
             rootStore.lotsStore.fetchCounters().then(() => {
                 return rootStore.lotsStore.fetchPage(page);
@@ -59,6 +62,7 @@ export const AllLots: FC<Props> = observer(
                         openSort={openSortModal}
                     />
                     <LotsList
+                        size={ViewWidth && viewWidth <= ViewWidth.MOBILE ? 'm' : 's'}
                         rootStore={rootStore}
                         lotsList={rootStore.lotsStore.lotsList}
                     />

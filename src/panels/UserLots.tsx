@@ -8,6 +8,7 @@ import {
     Tabs,
     TabsItem,
 } from '@vkontakte/vkui';
+import { observer } from 'mobx-react-lite';
 import React, { FC, useEffect } from 'react';
 import { LotCell } from '../components/LotCell/LotCell';
 import { Lot } from '../features/lot';
@@ -62,9 +63,9 @@ const ScrollableTabs: FC<ScrollableTabsProps> = ({ selected, setSelected }) => {
 type UserLogsProps = {
     rootStore: RootStore;
 };
-export const UserLotsBuy: FC<UserLogsProps> = ({ rootStore }) => {
+export const UserLotsBuy: FC<UserLogsProps> = observer(({ rootStore }) => {
     useEffect(() => {
-        rootStore.lotsStore.fetchPageByStatus(0, 'open');
+        rootStore.lotsStore.fetchPageByStatus(1, 'open');
     }, []);
     function goToLot(lot: Lot) {
         rootStore.lotsStore.currentLot = lot;
@@ -72,8 +73,8 @@ export const UserLotsBuy: FC<UserLogsProps> = ({ rootStore }) => {
     }
     return (
         <Group>
-            {rootStore.lotsStore.lotsToBuy}
             {rootStore.lotsStore.lotsToBuy &&
+                Array.isArray(rootStore.lotsStore.lotsToBuy) &&
                 rootStore.lotsStore.lotsToBuy.map((lot) => (
                     <LotCell
                         key={lot.id}
@@ -81,13 +82,14 @@ export const UserLotsBuy: FC<UserLogsProps> = ({ rootStore }) => {
                         lot={lot}
                     />
                 ))}
+            {rootStore.lotsStore.lotsToBuy.length === 0 && <div>пусто</div>}
         </Group>
     );
-};
+});
 
-export const UserLotsSell: FC<UserLogsProps> = ({ rootStore }) => {
+export const UserLotsSell: FC<UserLogsProps> = observer(({ rootStore }) => {
     useEffect(() => {
-        rootStore.lotsStore.fetchPageByStatus(0, 'sales');
+        rootStore.lotsStore.fetchPageByStatus(1, 'sales');
     }, []);
     function goToLot(lot: Lot) {
         rootStore.lotsStore.currentLot = lot;
@@ -95,9 +97,8 @@ export const UserLotsSell: FC<UserLogsProps> = ({ rootStore }) => {
     }
     return (
         <Group>
-            asdfasdf
-            {rootStore.lotsStore.lotsToSell}
-            {rootStore.lotsStore.lotsToSell && Array.isArray(rootStore.lotsStore.lotsToSell) &&
+            {rootStore.lotsStore.lotsToSell &&
+                Array.isArray(rootStore.lotsStore.lotsToSell) &&
                 rootStore.lotsStore.lotsToSell?.map((lot) => (
                     <LotCell
                         key={lot.id}
@@ -105,33 +106,38 @@ export const UserLotsSell: FC<UserLogsProps> = ({ rootStore }) => {
                         lot={lot}
                     />
                 ))}
+            {rootStore.lotsStore.lotsToSell.length === 0 && <div>пусто</div>}
         </Group>
     );
-};
+});
 
-export const UserLotsCompleted: FC<UserLogsProps> = ({ rootStore }) => {
-    useEffect(() => {
-        rootStore.lotsStore.fetchPageByStatus(0, 'closed');
-    }, []);
-    function goToLot(lot: Lot) {
-        rootStore.lotsStore.currentLot = lot;
-        rootStore.uiStore.go(RouteName.JUST_LOT);
+export const UserLotsCompleted: FC<UserLogsProps> = observer(
+    ({ rootStore }) => {
+        useEffect(() => {
+            rootStore.lotsStore.fetchPageByStatus(1, 'closed');
+        }, []);
+        function goToLot(lot: Lot) {
+            rootStore.lotsStore.currentLot = lot;
+            rootStore.uiStore.go(RouteName.JUST_LOT);
+        }
+        return (
+            <Group>
+                {rootStore.lotsStore.lotsCompleted &&
+                    Array.isArray(rootStore.lotsStore.lotsCompleted) &&
+                    rootStore.lotsStore.lotsCompleted.map((lot) => (
+                        <LotCell
+                            key={lot.id}
+                            goToLot={() => goToLot(lot)}
+                            lot={lot}
+                        />
+                    ))}
+                {rootStore.lotsStore.lotsCompleted.length === 0 && (
+                    <div>пусто</div>
+                )}
+            </Group>
+        );
     }
-    return (
-        <Group>
-            {rootStore.lotsStore.lotsCompleted}
-
-            {rootStore.lotsStore.lotsCompleted &&
-                rootStore.lotsStore.lotsCompleted.map((lot) => (
-                    <LotCell
-                        key={lot.id}
-                        goToLot={() => goToLot(lot)}
-                        lot={lot}
-                    />
-                ))}
-        </Group>
-    );
-};
+);
 
 export const UserLots: FC<Props> = ({ id, rootStore }) => {
     const [selectedTab, setSelectedTab] = React.useState(UserLotsTab.BUY);
@@ -144,7 +150,7 @@ export const UserLots: FC<Props> = ({ id, rootStore }) => {
                         <Icon28ArrowLeftOutline />
                     </IconButton>
                 }
-            ></PanelHeader>
+            >Мои лоты</PanelHeader>
             <ScrollableTabs
                 selected={selectedTab}
                 setSelected={setSelectedTab}
