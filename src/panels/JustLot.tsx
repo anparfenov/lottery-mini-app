@@ -92,10 +92,10 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                     статус: <div className={style.Lot__status} style={getStatusStyle(lot.status)}>{lot.status}</div>    
                 </div>
                 {time === 0 && <div className={style.UserLot__biddingEnd}>
-                    {makeBetsUntil(lot.biddingEnd, 'до конца ставок:')}
+                    {makeBetsUntil(lot.biddingEnd, 'Дата окончания ставок:')}
                 </div>}
                 {time > 0 && <div className={style.UserLot__biddingEnd}>
-                    до конца ставок:{' '}
+                    Дата окончания ставок:{' '}
                     {transformToDate(time)}
                 </div>}
                 {!isTimeOver() && (
@@ -194,10 +194,10 @@ const UserLot: FC<LotProps> = ({ lot, rootStore, openDatePickerModal }) => {
                     статус: <div className={style.Lot__status} style={getStatusStyle(lot.status)}>{lot.status}</div>    
                 </div>
                 {time === 0 && <div className={style.UserLot__biddingEnd}>
-                    {makeBetsUntil(lot.biddingEnd, 'до конца ставок:')}
+                    {makeBetsUntil(lot.biddingEnd, 'Дата окончания ставок:')}
                 </div>}
                 {time > 0 && <div className={style.UserLot__biddingEnd}>
-                    до конца ставок:{' '}
+                    Дата окончания ставок:{' '}
                     {transformToDate(time)}
                 </div>}
                 <Div className={style.userLot__buttons}>
