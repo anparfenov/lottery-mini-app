@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { Lot, LotDto } from '../features/lot';
 import { Sort } from './uiStore';
 import { RootStore } from './rootStore';
-import { apiCreateLot, apiGetCounters, apiGetLots, apiUpdateLot, LotStatus } from '../features/api';
+import { apiCreateLot, apiGetCounters, apiGetLots, apiMakeBet, apiUpdateLot, apiUploadImage, LotStatus } from '../features/api';
 
 type Counters = {
     total: number;
@@ -15,6 +15,7 @@ export class LotsStore {
     lotsToSell: Lot[] = [];
     lotsToBuy: Lot[] = [];
     lotsCompleted: Lot[] = [];
+    currentSort: Sort | null = null;
     currentPage: number = 0;
     itemsPerPage: number = 6;
     counters: Counters;
@@ -42,31 +43,35 @@ export class LotsStore {
 
     sortLots(sort: Sort) {
         this.currentPage = 1;
-        this.fetchSorted(this.currentPage, sort);
+        this.currentSort = sort;
+        this.fetchSorted(this.currentPage, this.currentSort);
     }
 
     setCurrentLot(lot: Lot) {
         this.currentLot = lot;
     }
 
-    createLot(lot: LotDto, id?: number, isUpdate?: boolean) {
+    async createLot(lot: LotDto, id?: number, isUpdate?: boolean) {
         if (isUpdate && id) {
-            console.log('update!!!');
-            apiUpdateLot({
+            return apiUpdateLot({
                 userHeaders: this.rootStore.appStore.extractHeaders(),
                 lot,
                 id,
             });
         } else {
-            apiCreateLot({
+            return apiCreateLot({
                 userHeaders: this.rootStore.appStore.extractHeaders(),
                 lot,
             });
         }
     }
 
-    makeBet() {
-        // TODO
+    async uploadImage(file: any, id: number) {
+        return apiUploadImage({ userHeaders: this.rootStore.appStore.extractHeaders(), file, id})
+    }
+
+    makeBet(bet: number, lotId: number) {
+        apiMakeBet({bet, lotId, userHeaders: this.rootStore.appStore.extractHeaders()})
     }
 
     async fetchSorted(page: number = 1, sort: Sort) {
@@ -84,15 +89,19 @@ export class LotsStore {
     }
 
     async fetchPage(page: number = 1) {
-        const res = await apiGetLots({
-            userHeaders: this.rootStore.appStore.extractHeaders(),
-            page,
-            limit: this.itemsPerPage,
-        });
-        console.log(res);
-        runInAction(() => {
-            this.lotsList = res;
-        });
+        if (this.currentSort) {
+            this.fetchSorted(page, this.currentSort);
+        } else {
+            const res = await apiGetLots({
+                userHeaders: this.rootStore.appStore.extractHeaders(),
+                page,
+                limit: this.itemsPerPage,
+            });
+            console.log(res);
+            runInAction(() => {
+                this.lotsList = res;
+            });
+        }
     }
 
     async fetchPageByStatus(page: number = 1, status?: LotStatus) {
@@ -104,18 +113,20 @@ export class LotsStore {
         });
         console.log(res);
         runInAction(() => {
-            if (status === 'sales') {
-                this.lotsToSell = res;
-            } else if (status === 'closed') {
-                this.lotsCompleted = res;
-            } else if (status === 'open') {
-                this.lotsToBuy = res;
+            if (res) {
+                if (status === 'sales') {
+                    this.lotsToSell = !Array.isArray(res) && res.error ? [] : res;
+                } else if (status === 'closed') {
+                    this.lotsCompleted = !Array.isArray(res) && res.error ? [] : res;
+                } else if (status === 'open') {
+                    this.lotsToBuy = !Array.isArray(res) && res.error ? [] : res;
+                }
             }
         });
     }
 
     async fetchCounters() {
-        apiGetCounters().then((counters: Counters) => {
+        apiGetCounters({ userHeaders: this.rootStore.appStore.extractHeaders() }).then((counters: Counters) => {
             runInAction(() => {
                 console.log('coutners', counters);
                 this.counters = counters

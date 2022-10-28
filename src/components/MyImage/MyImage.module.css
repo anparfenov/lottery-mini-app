@@ -8,6 +8,7 @@
     padding-top: var(--padding-top);
     max-width: var(--image-width);
     border: 1px dotted black;
+    width: 100%;
 }
 
 .MyImage__element {

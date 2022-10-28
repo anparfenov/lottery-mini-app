@@ -1,10 +1,7 @@
-import { Lot } from './lot';
-
 export const API_URL = 'https://lottery-api.adv2ls.ru';
 
 export function apiCreateLot({ userHeaders, lot }: any) {
     const body = JSON.stringify(lot);
-    console.log('apiCreateLot', body);
     return fetch(`${API_URL}/lots`, {
         method: 'POST',
         headers: {
@@ -13,7 +10,8 @@ export function apiCreateLot({ userHeaders, lot }: any) {
         },
         body,
     }).then((res) => {
-        console.log('created!!!', res);
+        console.log('create lot', res);
+        return res.json();
     });
 }
 
@@ -28,7 +26,7 @@ export function apiUpdateLot({ userHeaders, lot, id }: any) {
         },
         body,
     }).then((res) => {
-        console.log('created!!!', res);
+        return res.json();
     });
 }
 
@@ -75,6 +73,33 @@ export function apiGetLots({
     }).then((res) => res.json());
 }
 
-export function apiGetCounters() {
-    return fetch(`${API_URL}/lots/counters`).then(res => res.json());
+export function apiGetCounters({ userHeaders }: any) {
+    return fetch(`${API_URL}/lots/counters`, {
+        headers: { ...userHeaders }
+    }).then(res => res.json());
+}
+
+export function apiMakeBet({ bet, lotId, userHeaders }: any) {
+    const dto = {
+        bid: bet
+    }
+    return fetch(`${API_URL}/lots/${lotId}/bids`, {
+        method: 'POST',
+        headers: {
+            ...userHeaders
+        },
+        body: JSON.stringify(dto),
+    }).then((res) => res.json());
+}
+
+export function apiUploadImage({file, id, userHeaders}: any) {
+    const formData = new FormData();
+    formData.append('image', file);
+    return fetch(`${API_URL}/lots/${id}/image`, {
+        method: 'POST',
+        headers: {
+            ...userHeaders
+        },
+        body: formData
+    }).then((res) => res.json());
 }

@@ -20,9 +20,11 @@ export type Lot = {
     bets?: number;
     description?: string;
     biddingEnd: string;
-    ownerId: number;
+    authorId?: number;
     address?: string;
     status?: LotStatus;
+    lastBidder?: number;
+    currentBid?: number;
 };
 
 export type LotDto = {

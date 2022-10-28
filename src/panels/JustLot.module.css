@@ -1,0 +1,22 @@
+.Lot__title {
+    margin: 4px 0;
+}
+
+.Lot__image {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.Lot__priceStart {
+    margin-top: 4px;
+}
+
+.Lot__biddingEnd {
+    margin-top: 4px;
+    color: orange;
+}
+
+.Lot__description {
+    margin-top: 2px;
+}

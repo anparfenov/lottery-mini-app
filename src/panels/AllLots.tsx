@@ -1,9 +1,8 @@
-import { Icon28MenuOutline, Icon28UserOutline } from '@vkontakte/icons';
+import { Icon28UserOutline } from '@vkontakte/icons';
 import {
     Button,
     Div,
     Group,
-    Header,
     IconButton,
     Pagination,
     Panel,
@@ -54,7 +53,7 @@ export const AllLots: FC<Props> = observer(
                 >
                     Аукцион
                 </PanelHeader>
-                <Group header={<Header mode="secondary">Lots lits</Header>}>
+                <Group>
                     <SortButton
                         sortKey={rootStore.uiStore.currentSortItem}
                         openSort={openSortModal}
