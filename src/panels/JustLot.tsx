@@ -10,7 +10,7 @@ import {
     Panel,
     PanelHeader,
 } from '@vkontakte/vkui';
-import React, { FC, SyntheticEvent, useState } from 'react';
+import React, { FC, SyntheticEvent, useMemo, useState } from 'react';
 import { MyImage } from '../components/MyImage/MyImage';
 import { Lot } from '../features/lot';
 import { RootStore } from '../stores/rootStore';
@@ -23,15 +23,37 @@ import style from './JustLot.module.css';
 type LotProps = {
     lot: Lot;
     rootStore: RootStore;
+    openDatePickerModal?: any;
 };
 
 const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
     const [bet, setBet] = useState<number>(
         rootStore.lotsStore.currentLot.bets ?? 0
     );
+    const [dirty, setDirty] = useState<Record<string, boolean>>({});
+
     function isTimeOver() {
         return new Date(lot.biddingEnd).getTime() < new Date().getTime();
     }
+
+    const isBetCorrect = useMemo(() => {
+        if (!dirty['bet']) {
+            return true;
+        }
+        if (lot.currentBid) {
+            return bet >= lot.currentBid + lot.priceStep;
+        }
+        return bet >= lot.priceStart + lot.priceStep;
+    }, [bet, dirty]);
+
+    const isUserWinner = useMemo(() => {
+        return isTimeOver() && lot.lastBidder === rootStore.appStore.appLaunchParams.vk_user_id;
+    }, [])
+
+    function openMessenger() {
+        window.open(`https://vk.com/im?sel=${lot.authorId}`);
+    }
+
     return (
         <Group>
             <div className={style.Lot}>
@@ -43,6 +65,12 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                 <div className={style.Lot__priceStart}>
                     цена: {lot.priceStart}
                 </div>
+                <div className={style.Lot__priceStart}>
+                    ставка: {lot.currentBid}
+                </div>
+                <div style={{ padding: '0 16px', marginTop: '6px' }}>
+                    шаг: {lot.priceStep}
+                </div>
                 <div className={style.Lot__biddingEnd}>
                     до конца ставок:{' '}
                     {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}
@@ -50,15 +78,9 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                 <div>
                     <FormItem
                         top="ставка"
-                        status={
-                            bet >= lot.priceStart + lot.priceStep
-                                ? 'default'
-                                : 'error'
-                        }
+                        status={isBetCorrect ? 'default' : 'error'}
                         bottom={
-                            bet >= lot.priceStart + lot.priceStep
-                                ? ''
-                                : `Шаг ставки ${lot.priceStep}`
+                            isBetCorrect ? '' : `Шаг ставки ${lot.priceStep}`
                         }
                     >
                         <Input
@@ -68,6 +90,7 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                                 const value = Number(
                                     (e.target as HTMLInputElement).value
                                 );
+                                setDirty({ bet: true });
                                 setBet(value);
                             }}
                         />
@@ -82,26 +105,31 @@ const LotComponent: FC<LotProps> = ({ lot, rootStore }) => {
                                 if (bet >= lot.priceStart + lot.priceStep) {
                                     rootStore.lotsStore.makeBet(bet, lot.id);
                                 }
+                                rootStore.uiStore.go(RouteName.ALL_LOTS);
                             }}
                         >
                             сделать ставку
                         </Button>
                     )}
-                    {isTimeOver() && (
+                    {isTimeOver() && !isUserWinner && (
                         <Button stretched disabled={true} size="m">
                             Аукцион завершен
                         </Button>
                     )}
+                    {isUserWinner && <Button stretched onClick={openMessenger} size="m">Связаться с продавцом</Button>}
                 </Div>
             </div>
         </Group>
     );
 };
 
-const UserLot: FC<LotProps> = ({ lot, rootStore }) => {
+const UserLot: FC<LotProps> = ({ lot, rootStore, openDatePickerModal }) => {
     function removeLot() {
         rootStore.lotsStore.removeLotById(lot.id);
         rootStore.uiStore.go(RouteName.ALL_LOTS);
+    }
+    function isTimeOver() {
+        return new Date(lot.biddingEnd).getTime() < new Date().getTime();
     }
     return (
         <Group>
@@ -116,22 +144,27 @@ const UserLot: FC<LotProps> = ({ lot, rootStore }) => {
                 <div className={style.UserLot__price}>
                     цена: {lot.priceStart}
                 </div>
+                <div className={style.Lot__priceStart}>
+                    ставка: {lot.currentBid}
+                </div>
                 <div className={style.UserLot__biddingEnd}>
                     до конца ставок:{' '}
                     {dateFnsFormat(new Date(lot.biddingEnd), 'dd/MM/yyyy')}
                 </div>
                 <Div className={style.userLot__buttons}>
                     <ButtonGroup stretched>
-                        <Button
-                            stretched
-                            size="m"
-                            onClick={() => {
-                                rootStore.lotsStore.currentLot = lot;
-                                rootStore.uiStore.go(RouteName.LOT_CREATOR);
-                            }}
-                        >
-                            изменить
-                        </Button>
+                        {!isTimeOver && (
+                            <Button
+                                stretched
+                                size="m"
+                                onClick={() => {
+                                    rootStore.lotsStore.currentLot = lot;
+                                    rootStore.uiStore.go(RouteName.LOT_CREATOR);
+                                }}
+                            >
+                                изменить
+                            </Button>
+                        )}
                         <Button
                             appearance="negative"
                             stretched
@@ -150,9 +183,10 @@ const UserLot: FC<LotProps> = ({ lot, rootStore }) => {
 type Props = {
     id: string;
     rootStore: RootStore;
+    openDatePickerModal: any;
 };
 
-export const JustLot: FC<Props> = ({ id, rootStore }) => {
+export const JustLot: FC<Props> = ({ id, rootStore, openDatePickerModal }) => {
     let lot = null;
     if (
         rootStore.userStore.currentUser.id ===
@@ -160,6 +194,7 @@ export const JustLot: FC<Props> = ({ id, rootStore }) => {
     ) {
         lot = (
             <UserLot
+                openDatePickerModal={openDatePickerModal}
                 lot={rootStore.lotsStore.currentLot}
                 rootStore={rootStore}
             />

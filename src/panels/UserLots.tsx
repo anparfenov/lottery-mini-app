@@ -13,25 +13,19 @@ import React, { FC, useEffect } from 'react';
 import { LotCell } from '../components/LotCell/LotCell';
 import { Lot } from '../features/lot';
 import { RootStore } from '../stores/rootStore';
-import { RouteName } from '../stores/uiStore';
+import { RouteName, UserLotsTab } from '../stores/uiStore';
 
 type Props = {
     id: any;
     rootStore: RootStore;
 };
 
-enum UserLotsTab {
-    SELL = 'sell',
-    BUY = 'buy',
-    COMPLETED = 'COMPLETED',
-}
-
 type ScrollableTabsProps = {
     selected: UserLotsTab;
     setSelected: any;
 };
 
-const ScrollableTabs: FC<ScrollableTabsProps> = ({ selected, setSelected }) => {
+const ScrollableTabs: FC<ScrollableTabsProps> = observer(({ selected, setSelected }) => {
     return (
         <Group>
             <Tabs>
@@ -58,14 +52,14 @@ const ScrollableTabs: FC<ScrollableTabsProps> = ({ selected, setSelected }) => {
             </Tabs>
         </Group>
     );
-};
+});
 
 type UserLogsProps = {
     rootStore: RootStore;
 };
 export const UserLotsBuy: FC<UserLogsProps> = observer(({ rootStore }) => {
     useEffect(() => {
-        rootStore.lotsStore.fetchPageByStatus(1, 'open');
+        rootStore.lotsStore.fetchPageByStatus(1, 'sales');
     }, []);
     function goToLot(lot: Lot) {
         rootStore.lotsStore.currentLot = lot;
@@ -89,7 +83,7 @@ export const UserLotsBuy: FC<UserLogsProps> = observer(({ rootStore }) => {
 
 export const UserLotsSell: FC<UserLogsProps> = observer(({ rootStore }) => {
     useEffect(() => {
-        rootStore.lotsStore.fetchPageByStatus(1, 'sales');
+        rootStore.lotsStore.fetchPageByStatus(1);
     }, []);
     function goToLot(lot: Lot) {
         rootStore.lotsStore.currentLot = lot;
@@ -139,9 +133,7 @@ export const UserLotsCompleted: FC<UserLogsProps> = observer(
     }
 );
 
-export const UserLots: FC<Props> = ({ id, rootStore }) => {
-    const [selectedTab, setSelectedTab] = React.useState(UserLotsTab.BUY);
-
+export const UserLots: FC<Props> = observer(({ id, rootStore }) => {
     return (
         <Panel id={id}>
             <PanelHeader
@@ -150,20 +142,23 @@ export const UserLots: FC<Props> = ({ id, rootStore }) => {
                         <Icon28ArrowLeftOutline />
                     </IconButton>
                 }
-            >Мои лоты</PanelHeader>
+            >
+                Мои лоты
+            </PanelHeader>
             <ScrollableTabs
-                selected={selectedTab}
-                setSelected={setSelectedTab}
+                selected={rootStore.uiStore.userRouteSelectedTab}
+                setSelected={rootStore.uiStore.setUserRouteSelectedTab.bind(rootStore.uiStore)}
             />
-            {selectedTab === UserLotsTab.BUY && (
+            {rootStore.uiStore.userRouteSelectedTab === UserLotsTab.BUY && (
                 <UserLotsBuy rootStore={rootStore} />
             )}
-            {selectedTab === UserLotsTab.SELL && (
+            {rootStore.uiStore.userRouteSelectedTab === UserLotsTab.SELL && (
                 <UserLotsSell rootStore={rootStore} />
             )}
-            {selectedTab === UserLotsTab.COMPLETED && (
+            {rootStore.uiStore.userRouteSelectedTab ===
+                UserLotsTab.COMPLETED && (
                 <UserLotsCompleted rootStore={rootStore} />
             )}
         </Panel>
     );
-};
+});

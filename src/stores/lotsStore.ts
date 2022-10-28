@@ -49,6 +49,19 @@ export class LotsStore {
         this.lotsList = this.lotsList.filter((lot) => lot.id !== id);
     }
 
+    changeBiddingEnd(date: string) {
+        this.currentLot.biddingEnd = date;
+        const lotDto = {
+            title: this.currentLot.title,
+            description: this.currentLot.description,
+            address: '11',
+            priceStart: this.currentLot.priceStart,
+            priceStep: this.currentLot.priceStep,
+            biddingEnd: date,
+        };
+        this.createLot(lotDto, this.currentLot.id, true);
+    }
+
     sortLots(sort: Sort) {
         this.currentPage = 1;
         this.currentSort = sort;
@@ -124,26 +137,27 @@ export class LotsStore {
         let params: any = {
             userHeaders: this.rootStore.appStore.extractHeaders(),
             page,
-            status,
             limit: this.itemsPerPage,
         };
-        if (status === 'sales') {
-            params = {...params, isMy: true }
+        if (status) {
+            params = {...params, status }
+        }
+        if (status !== 'sales') {
+            params = {...params, isMy: true, isOnlyBet: true }
         }
         const res = await apiGetLots(params);
         console.log('fetch by status', res);
         runInAction(() => {
             if (res) {
                 if (status === 'sales') {
-                    this.lotsToSell =
+                    this.lotsToBuy =
                         !Array.isArray(res) && res.error ? [] : res;
                 } else if (status === 'closed') {
                     this.lotsCompleted =
                         !Array.isArray(res) && res.error ? [] : res;
-                } else if (status === 'open') {
-                    this.lotsToBuy =
+                } else {
+                    this.lotsToSell =
                         !Array.isArray(res) && res.error ? [] : res;
-                    console.log('lots to b', this.lotsToBuy);
                 }
             }
         });

@@ -28,10 +28,10 @@ export type Lot = {
 };
 
 export type LotDto = {
-    title: string;
-    description: string;
-    address: string;
-    priceStart: number;
-    priceStep: number;
-    biddingEnd: string;
+    title?: string;
+    description?: string;
+    address?: string;
+    priceStart?: number;
+    priceStep?: number;
+    biddingEnd?: string;
 };

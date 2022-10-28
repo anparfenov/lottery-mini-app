@@ -37,10 +37,17 @@ const routesConfig: Record<RouteName, Route> = {
     },
 };
 
+export enum UserLotsTab {
+    SELL = 'sell',
+    BUY = 'buy',
+    COMPLETED = 'COMPLETED',
+}
+
 export class UiStore {
     sortItems: Sort[] = sortModalItems;
-    currentPanel: string = RouteName.ALL_LOTS;
+    currentPanel: RouteName = RouteName.ALL_LOTS;
     routes: Route[] = [];
+    userRouteSelectedTab: UserLotsTab = UserLotsTab.BUY;
     rootStore: RootStore;
 
     constructor(rootStore: RootStore) {
@@ -50,6 +57,10 @@ export class UiStore {
 
     get currentSortItem() {
         return this.sortItems.find((sortItem) => sortItem.isEnabled);
+    }
+
+    setUserRouteSelectedTab(tab: UserLotsTab) {
+        this.userRouteSelectedTab = tab;
     }
 
     setCurrentSortByName(name: string) {
@@ -82,7 +93,7 @@ export class UiStore {
         if (this.routes.length > 0) {
             const last = this.routes.pop();
             if (last && last.name) {
-                this.currentPanel = last.name;
+                this.currentPanel = last.name as RouteName;
             }
         } else {
             this.currentPanel = RouteName.ALL_LOTS;

@@ -28,6 +28,9 @@ export const App = observer(() => {
     function openSortModal() {
         setModal('sortmodal');
     }
+    function openDatePickerModal() {
+        setModal('datepicker');
+    }
     useEffect(() => {
         bridge
             .send('VKWebAppGetLaunchParams')
@@ -65,6 +68,11 @@ export const App = observer(() => {
                         activeModal={modal}
                         sortItems={sortItems}
                         uiStore={rootStore.uiStore}
+                        rootStore={rootStore}
+                        onDatePick={(date: any) => {
+                            setModal(null);
+                            rootStore.lotsStore.changeBiddingEnd(date);
+                        }}
                     />
                 }
                 header={<PanelHeader separator={false}>Auction</PanelHeader>}
@@ -81,6 +89,7 @@ export const App = observer(() => {
                             id={RouteName.USER_LOTS}
                         />
                         <JustLot
+                            openDatePickerModal={openDatePickerModal}
                             rootStore={rootStore}
                             id={RouteName.JUST_LOT}
                         />
